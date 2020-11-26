@@ -4,9 +4,8 @@ import (
 	"likezh/api"
 	"likezh/cache"
 	"likezh/serializer"
-	v1 "likezh/service/v1"
+	"likezh/service/v1"
 	"net/http"
-
 	"github.com/gin-gonic/gin"
 )
 
@@ -15,9 +14,9 @@ func UserRegister(c *gin.Context) {
 	var service v1.UserRegisterService
 	if err := c.ShouldBind(&service); err == nil {
 		res := service.Register()
-		c.JSON(200, res.Result())
+		c.JSON(200, res)
 	} else {
-		c.JSON(200, api.ErrorResponse(err).Result())
+		c.JSON(200, api.ErrorResponse(err))
 	}
 }
 
@@ -26,9 +25,9 @@ func UserLogin(c *gin.Context) {
 	var service v1.UserLoginService
 	if err := c.ShouldBind(&service); err == nil {
 		res := service.Login()
-		c.JSON(200, res.Result())
+		c.JSON(200, res)
 	} else {
-		c.JSON(200, api.ErrorResponse(err).Result())
+		c.JSON(200, api.ErrorResponse(err))
 	}
 }
 
@@ -36,7 +35,7 @@ func UserLogin(c *gin.Context) {
 func UserMe(c *gin.Context) {
 	user := api.CurrentUser(c)
 	res := serializer.Response{Data: serializer.BuildUserResponse(*user)}
-	c.JSON(http.StatusOK, res.Result())
+	c.JSON(http.StatusOK, res)
 }
 
 // ChangePassword 修改密码
@@ -45,20 +44,19 @@ func ChangePassword(c *gin.Context) {
 	var service v1.ChangePassword
 	if err := c.ShouldBind(&service); err == nil {
 		res := service.Change(user)
-		c.JSON(http.StatusOK, res.Result())
+		c.JSON(http.StatusOK, res)
 	} else {
-		c.JSON(http.StatusOK, api.ErrorResponse(err).Result())
+		c.JSON(http.StatusOK, api.ErrorResponse(err))
 	}
 }
 
-// Logout 用户注销
+// Logout 用户退出登录
 func Logout(c *gin.Context) {
 	token, _ := c.Get("token")
 	tokenString := token.(string)
 
 	cache.RedisClient.SAdd("jwt:baned", tokenString)
 	c.JSON(http.StatusOK, serializer.Response{
-		Msg: "注销成功！",
+		Msg: "已退出登录",
 	})
-
 }

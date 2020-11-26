@@ -6,8 +6,6 @@ import (
 	"likezh/conf"
 	"likezh/serializer"
 	"net/http"
-	"strings"
-
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 )
@@ -16,35 +14,25 @@ import (
 func JwtRequired() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		// 从请求头获得token
-		userToken := c.Request.Header.Get("Authorization")
+		userToken := c.Request.Header.Get("token")
 		// 判断请求头中是否有token
 		if userToken == "" {
 			c.JSON(http.StatusOK, serializer.Response{
 				Code: serializer.UserNotPermissionError,
 				Msg:  "令牌不能为空！",
-			}.Result())
-			c.Abort()
-			return
-		}
-
-		split := strings.Split(userToken, " ")
-		if len(split) != 2 || split[0] != "Bearer" {
-			c.JSON(http.StatusOK, serializer.Response{
-				Code: serializer.UserNotPermissionError,
-				Msg:  "令牌格式不正确",
-			}.Result())
+			})
 			c.Abort()
 			return
 		}
 
 		// 解码token值
-		token, err := jwt.ParseWithClaims(split[1], &auth.Jwt{}, func(token *jwt.Token) (interface{}, error) { return conf.SigningKey, nil })
+		token, err := jwt.ParseWithClaims(userToken, &auth.Jwt{}, func(token *jwt.Token) (interface{}, error) { return conf.SigningKey, nil })
 		if err != nil || token.Valid != true {
 			// 过期或者非正确处理
 			c.JSON(http.StatusOK, serializer.Response{
 				Code: serializer.UserNotPermissionError,
 				Msg:  "令牌错误！",
-			}.Result())
+			})
 			c.Abort()
 			return
 		}
@@ -54,7 +42,7 @@ func JwtRequired() gin.HandlerFunc {
 			c.JSON(http.StatusOK, serializer.Response{
 				Code: serializer.UserNotPermissionError,
 				Msg:  "令牌已注销!",
-			}.Result())
+			})
 			c.Abort()
 			return
 		}

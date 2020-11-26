@@ -7,10 +7,10 @@ import (
 
 // UserRegisterService 管理用户注册服务
 type UserRegisterService struct {
+	UserName        string `form:"username" json:"username" binding:"required,min=3,max=30"`
+	Password        string `form:"password" json:"password" binding:"required,min=6,max=18"`
+	PasswordConfirm string `form:"password_confirm" json:"password_confirm" binding:"required,min=6,max=18"`
 	Nickname        string `form:"nickname" json:"nickname" binding:"required,min=2,max=30"`
-	UserName        string `form:"user_name" json:"user_name" binding:"required,min=5,max=30"`
-	Password        string `form:"password" json:"password" binding:"required,min=8,max=18"`
-	PasswordConfirm string `form:"password_confirm" json:"password_confirm" binding:"required,min=8,max=18"`
 }
 
 // Valid 验证表单
@@ -47,7 +47,7 @@ func (service *UserRegisterService) Valid() *serializer.Response {
 func (service *UserRegisterService) Register() *serializer.Response {
 	user := model.User{
 		Nickname: service.Nickname,
-		UserName: service.UserName,
+		Username: service.UserName,
 		Status:   model.Active,
 	}
 

@@ -6,22 +6,14 @@ import (
 	"likezh/conf"
 	"likezh/model"
 	"likezh/serializer"
-	"net/http"
-
 	"github.com/gin-gonic/gin"
 	"gopkg.in/go-playground/validator.v9"
+	"net/http"
 )
 
 // Index 主页
 func Index(c *gin.Context) {
-	c.String(http.StatusOK, "================   Welcome to likezh Restful API Index Page!     https://github.com/L-HeliantHuS/likezh   ================")
-}
-
-// Ping 状态检查页面
-func Ping(c *gin.Context) {
-	c.JSON(http.StatusOK, serializer.Response{
-		Msg: "Pong",
-	}.Result())
+	c.String(http.StatusOK, "======= https://github.com/zjczz/likezh =======")
 }
 
 // CurrentUser 获取当前用户
@@ -43,7 +35,6 @@ func ErrorResponse(err error) serializer.Response {
 			return serializer.Response{
 				Code:  serializer.UserInputError,
 				Msg:   fmt.Sprintf("%s%s", field, tag),
-				Error: fmt.Sprint(err),
 			}
 		}
 	}
@@ -51,13 +42,11 @@ func ErrorResponse(err error) serializer.Response {
 		return serializer.Response{
 			Code:  serializer.UserInputError,
 			Msg:   "JSON类型不匹配",
-			Error: fmt.Sprint(err),
 		}
 	}
 
 	return serializer.Response{
 		Code:  serializer.UserInputError,
 		Msg:   "参数错误",
-		Error: fmt.Sprint(err),
 	}
 }

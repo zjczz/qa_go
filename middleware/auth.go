@@ -37,24 +37,7 @@ func AuthRequired() gin.HandlerFunc {
 		c.JSON(http.StatusOK, serializer.Response{
 			Code: serializer.UserNotPermissionError,
 			Msg:  "需要登录",
-		}.Result())
-		c.Abort()
-	}
-}
-
-// 必须为管理员
-func AuthAdmin() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		if user, _ := c.Get("user"); user != nil {
-			if user.(*model.User).SuperUser {
-				c.Next()
-				return
-			}
-		}
-		c.JSON(http.StatusOK, serializer.Response{
-			Code: serializer.UserNotPermissionError,
-			Msg:  "你没有权限进行此操作.",
-		}.Result())
+		})
 		c.Abort()
 	}
 }

@@ -8,17 +8,16 @@ import (
 // User 用户模型
 type User struct {
 	gorm.Model
-	UserName       string
-	PasswordDigest string
-	Nickname       string
-	Status         string
-	Avatar         string `gorm:"size:1000"`
-	SuperUser      bool
+	Username string
+	Password string
+	Nickname string
+	Status   string
+	Avatar   string
 }
 
 const (
 	// PassWordCost 密码加密难度
-	PassWordCost = 12
+	PassWordCost = bcrypt.DefaultCost
 	// Active 激活用户
 	Active string = "active"
 	// Inactive 未激活用户
@@ -40,12 +39,12 @@ func (user *User) SetPassword(password string) error {
 	if err != nil {
 		return err
 	}
-	user.PasswordDigest = string(bytes)
+	user.Password = string(bytes)
 	return nil
 }
 
 // CheckPassword 校验密码
 func (user *User) CheckPassword(password string) bool {
-	err := bcrypt.CompareHashAndPassword([]byte(user.PasswordDigest), []byte(password))
+	err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
 	return err == nil
 }
