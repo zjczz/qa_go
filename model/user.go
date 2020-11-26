@@ -16,8 +16,8 @@ type User struct {
 }
 
 const (
-	// PassWordCost 密码加密难度
-	PassWordCost = bcrypt.DefaultCost
+	// PasswordCost 密码加密难度
+	PasswordCost = bcrypt.DefaultCost
 	// Active 激活用户
 	Active string = "active"
 	// Inactive 未激活用户
@@ -35,7 +35,7 @@ func GetUser(ID interface{}) (User, error) {
 
 // SetPassword 设置密码
 func (user *User) SetPassword(password string) error {
-	bytes, err := bcrypt.GenerateFromPassword([]byte(password), PassWordCost)
+	bytes, err := bcrypt.GenerateFromPassword([]byte(password), PasswordCost)
 	if err != nil {
 		return err
 	}
