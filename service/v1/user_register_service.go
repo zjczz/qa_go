@@ -16,28 +16,13 @@ type UserRegisterService struct {
 // Valid 验证表单
 func (service *UserRegisterService) Valid() *serializer.Response {
 	if service.PasswordConfirm != service.Password {
-		return &serializer.Response{
-			Code: serializer.UserPasswordError,
-			Msg:  "两次输入的密码不相同",
-		}
+		return serializer.ErrorResponse(serializer.CodePasswordConfirmError)
 	}
 
 	count := 0
-	model.DB.Model(&model.User{}).Where("nickname = ?", service.Nickname).Count(&count)
+	model.DB.Model(&model.User{}).Where("username = ?", service.UserName).Count(&count)
 	if count > 0 {
-		return &serializer.Response{
-			Code: serializer.UserRepeatError,
-			Msg:  "昵称被占用",
-		}
-	}
-
-	count = 0
-	model.DB.Model(&model.User{}).Where("user_name = ?", service.UserName).Count(&count)
-	if count > 0 {
-		return &serializer.Response{
-			Code: serializer.UserRepeatError,
-			Msg:  "用户名被占用",
-		}
+		return serializer.ErrorResponse(serializer.CodeUserExistError)
 	}
 
 	return nil
@@ -46,8 +31,8 @@ func (service *UserRegisterService) Valid() *serializer.Response {
 // Register 用户注册
 func (service *UserRegisterService) Register() *serializer.Response {
 	user := model.User{
-		Nickname: service.Nickname,
 		Username: service.UserName,
+		Nickname: service.Nickname,
 		Status:   model.Active,
 	}
 
@@ -58,21 +43,13 @@ func (service *UserRegisterService) Register() *serializer.Response {
 
 	// 加密密码
 	if err := user.SetPassword(service.Password); err != nil {
-		return &serializer.Response{
-			Code: serializer.ServerPanicError,
-			Msg:  "密码加密失败",
-		}
+		return serializer.ErrorResponse(serializer.CodeUnknownError)
 	}
 
 	// 创建用户
 	if err := model.DB.Create(&user).Error; err != nil {
-		return &serializer.Response{
-			Code: serializer.DatabaseWriteError,
-			Msg:  "注册失败",
-		}
+		return serializer.ErrorResponse(serializer.CodeDatabaseError)
 	}
 
-	return &serializer.Response{
-		Data: serializer.BuildUserResponse(user),
-	}
+	return serializer.OkResponse(serializer.BuildUserResponse(user))
 }

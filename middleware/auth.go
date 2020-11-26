@@ -33,11 +33,7 @@ func AuthRequired() gin.HandlerFunc {
 				return
 			}
 		}
-
-		c.JSON(http.StatusOK, serializer.Response{
-			Code: serializer.UserNotPermissionError,
-			Msg:  "需要登录",
-		})
+		c.JSON(http.StatusOK, serializer.ErrorResponse(serializer.CodeUnknownError))
 		c.Abort()
 	}
 }

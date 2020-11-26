@@ -15,34 +15,27 @@ func JwtRequired() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		// 从请求头获得token
 		userToken := c.Request.Header.Get("token")
-		// 判断请求头中是否有token
 		if userToken == "" {
-			c.JSON(http.StatusOK, serializer.Response{
-				Code: serializer.UserNotPermissionError,
-				Msg:  "令牌不能为空！",
-			})
+			// 请求是否携带token
+			c.JSON(http.StatusOK, serializer.ErrorResponse(serializer.CodeTokenNotExitError))
 			c.Abort()
 			return
 		}
 
 		// 解码token值
-		token, err := jwt.ParseWithClaims(userToken, &auth.Jwt{}, func(token *jwt.Token) (interface{}, error) { return conf.SigningKey, nil })
+		token, err := jwt.ParseWithClaims(userToken, &auth.Jwt{}, func(token *jwt.Token) (interface{}, error) {
+			return conf.SigningKey, nil
+		})
 		if err != nil || token.Valid != true {
-			// 过期或者非正确处理
-			c.JSON(http.StatusOK, serializer.Response{
-				Code: serializer.UserNotPermissionError,
-				Msg:  "令牌错误！",
-			})
+			// 过期或者非正确
+			c.JSON(http.StatusOK, serializer.ErrorResponse(serializer.CodeTokenExpiredError))
 			c.Abort()
 			return
 		}
 
-		// 判断令牌是否在黑名单里面
+		// 判断令牌是否已注销
 		if result, _ := cache.RedisClient.SIsMember("jwt:baned", token.Raw).Result(); result {
-			c.JSON(http.StatusOK, serializer.Response{
-				Code: serializer.UserNotPermissionError,
-				Msg:  "令牌已注销!",
-			})
+			c.JSON(http.StatusOK, serializer.ErrorResponse(serializer.CodeTokenExpiredError))
 			c.Abort()
 			return
 		}

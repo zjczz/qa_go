@@ -16,7 +16,7 @@ func UserRegister(c *gin.Context) {
 		res := service.Register()
 		c.JSON(200, res)
 	} else {
-		c.JSON(200, api.ErrorResponse(err))
+		c.JSON(200, serializer.ErrorResponse(serializer.CodeParamError))
 	}
 }
 
@@ -27,15 +27,14 @@ func UserLogin(c *gin.Context) {
 		res := service.Login()
 		c.JSON(200, res)
 	} else {
-		c.JSON(200, api.ErrorResponse(err))
+		c.JSON(200, serializer.ErrorResponse(serializer.CodeParamError))
 	}
 }
 
 // UserMe 用户详情
 func UserMe(c *gin.Context) {
 	user := api.CurrentUser(c)
-	res := serializer.Response{Data: serializer.BuildUserResponse(*user)}
-	c.JSON(http.StatusOK, res)
+	c.JSON(http.StatusOK, serializer.OkResponse(serializer.BuildUserResponse(*user)))
 }
 
 // ChangePassword 修改密码
@@ -46,7 +45,7 @@ func ChangePassword(c *gin.Context) {
 		res := service.Change(user)
 		c.JSON(http.StatusOK, res)
 	} else {
-		c.JSON(http.StatusOK, api.ErrorResponse(err))
+		c.JSON(http.StatusOK, serializer.ErrorResponse(serializer.CodeParamError))
 	}
 }
 
