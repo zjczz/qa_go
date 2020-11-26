@@ -19,9 +19,8 @@ func (service *UserRegisterService) Valid() *serializer.Response {
 		return serializer.ErrorResponse(serializer.CodePasswordConfirmError)
 	}
 
-	count := 0
-	model.DB.Model(&model.User{}).Where("username = ?", service.UserName).Count(&count)
-	if count > 0 {
+	res := model.DB.Where("username = ?", service.UserName).First(&model.User{})
+	if res.RowsAffected > 0 {
 		return serializer.ErrorResponse(serializer.CodeUserExistError)
 	}
 
