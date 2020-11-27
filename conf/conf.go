@@ -12,7 +12,7 @@ import (
 
 // 全局参数
 var (
-	SigningKey = []byte(os.Getenv("JWT_SECRET_KEY"))
+	JwtSecretKey = []byte(os.Getenv("JWT_SECRET_KEY"))
 )
 
 // Init 初始化配置项

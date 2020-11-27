@@ -3,7 +3,6 @@ package middleware
 import (
 	"likezh/auth"
 	"likezh/cache"
-	"likezh/conf"
 	"likezh/serializer"
 	"net/http"
 	"github.com/dgrijalva/jwt-go"
@@ -23,8 +22,8 @@ func JwtRequired() gin.HandlerFunc {
 		}
 
 		// 解码token值
-		token, err := jwt.ParseWithClaims(userToken, &auth.Jwt{}, func(token *jwt.Token) (interface{}, error) {
-			return conf.SigningKey, nil
+		token, err := jwt.ParseWithClaims(userToken, &auth.JwtClaim{}, func(token *jwt.Token) (interface{}, error) {
+			return auth.JwtSecretKey, nil
 		})
 		if err != nil || token.Valid != true {
 			// 过期或者非正确
@@ -44,7 +43,7 @@ func JwtRequired() gin.HandlerFunc {
 		c.Set("token", token.Raw)
 
 		// 将结构体地址存入上下文
-		if jwtStruct, ok := token.Claims.(*auth.Jwt); ok {
+		if jwtStruct, ok := token.Claims.(*auth.JwtClaim); ok {
 			c.Set("user", &jwtStruct.Data)
 		}
 	}

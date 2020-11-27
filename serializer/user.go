@@ -2,8 +2,8 @@ package serializer
 
 import "likezh/model"
 
-// User 用户序列化器
-type User struct {
+// userdata 用户序列化器
+type userdata struct {
 	ID        uint   `json:"id"`
 	Username  string `json:"username"`
 	Nickname  string `json:"nickname"`
@@ -12,14 +12,9 @@ type User struct {
 	CreatedAt int64  `json:"created_at"`
 }
 
-// UserResponse 单个用户序列化
-type UserResponse struct {
-	Data User `json:"user"`
-}
-
-// BuildUser 序列化用户
-func BuildUser(user model.User) User {
-	return User{
+// buildUser 序列化用户
+func buildUser(user model.User) *userdata {
+	return &userdata{
 		ID:        user.ID,
 		Username:  user.Username,
 		Nickname:  user.Nickname,
@@ -29,9 +24,14 @@ func BuildUser(user model.User) User {
 	}
 }
 
+// UserResponse 单个用户序列化
+type UserResponse struct {
+	User *userdata `json:"user"`
+}
+
 // BuildUserResponse 序列化用户响应
-func BuildUserResponse(user model.User) UserResponse {
-	return UserResponse{
-		Data: BuildUser(user),
+func BuildUserResponse(user model.User) *UserResponse {
+	return &UserResponse{
+		User: buildUser(user),
 	}
 }

@@ -2,7 +2,6 @@ package v1
 
 import (
 	"likezh/auth"
-	"likezh/conf"
 	"likezh/model"
 	"likezh/serializer"
 	"time"
@@ -17,24 +16,21 @@ type UserLoginService struct {
 	Password string `form:"password" json:"password" binding:"required,min=6,max=18"`
 }
 
-func GenerateToken(user model.User, ExpiresTime int64) (string, error) {
-	claims := auth.Jwt{
+func GenerateToken(user model.User) (string, error) {
+	claim := auth.JwtClaim{
 		StandardClaims: jwt.StandardClaims{
-			ExpiresAt: ExpiresTime,
+			ExpiresAt: time.Now().Add(auth.JwtExpireTime).Unix(),
 			IssuedAt:  time.Now().Unix(),
 		},
 		Data: user,
 	}
-
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	jwtString, err := token.SignedString(conf.SigningKey)
-	return jwtString, err
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claim)
+	return token.SignedString(auth.JwtSecretKey)
 }
 
 // Login 用户登录函数
 func (service *UserLoginService) Login() *serializer.Response {
 	var user model.User
-	ExpiresTime := time.Now().Add(time.Hour * time.Duration(720)).Unix()
 
 	if err := model.DB.Where("username = ?", service.Username).First(&user).Error; err != nil {
 		return serializer.ErrorResponse(serializer.CodeUserNotExistError)
@@ -44,7 +40,7 @@ func (service *UserLoginService) Login() *serializer.Response {
 		return serializer.ErrorResponse(serializer.CodePasswordError)
 	}
 
-	token, err := GenerateToken(user, ExpiresTime)
+	token, err := GenerateToken(user)
 	if err != nil {
 		return serializer.ErrorResponse(serializer.CodeUnknownError)
 	}
