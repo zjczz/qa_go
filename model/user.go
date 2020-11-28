@@ -1,18 +1,27 @@
 package model
 
 import (
-	"gorm.io/gorm"
 	"golang.org/x/crypto/bcrypt"
+	"gorm.io/gorm"
 )
 
 // User 用户模型
 type User struct {
 	gorm.Model
-	Username string
-	Password string
-	Nickname string
-	Status   string
-	Avatar   string
+	Username      string      `gorm:"unique;not null;"` // 用户名
+	Password      string      `gorm:"not null;"`        // 密码
+	Email         string      `gorm:"unique;not null;"` // 邮箱
+	Nickname      string      // 昵称
+	Avatar        string      `gorm:"type:text;not null;"` // 头像
+	Status        int         `gorm:"not null;"`           // 状态
+	UserProfileID int         `gorm:"unique;not null;"`    // 用户信息外键
+	UserProfile   UserProfile // 用户信息
+}
+
+// UserProfile 用户信息模型
+type UserProfile struct {
+	gorm.Model
+	Description string // 个人描述
 }
 
 const (
