@@ -4,7 +4,7 @@ import (
 	"likezh/api"
 	"likezh/cache"
 	"likezh/serializer"
-	"likezh/service/v1"
+	v1 "likezh/service/v1"
 	"net/http"
 	"github.com/gin-gonic/gin"
 )

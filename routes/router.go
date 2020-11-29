@@ -1,10 +1,11 @@
 package routes
 
 import (
-	"github.com/gin-gonic/gin"
 	"likezh/api"
-	"likezh/api/v1"
+	v1 "likezh/api/v1"
 	"likezh/middleware"
+
+	"github.com/gin-gonic/gin"
 )
 
 // NewRouter 路由配置
@@ -34,6 +35,7 @@ func NewRouter() *gin.Engine {
 			jwt.POST("/user/change_password", v1.ChangePassword)
 			// 退出登录
 			jwt.POST("/user/logout", v1.Logout)
+			jwt.POST("/question/add_question", v1.QuestionAdd)
 		}
 	}
 

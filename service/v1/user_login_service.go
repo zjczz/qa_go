@@ -16,13 +16,13 @@ type UserLoginService struct {
 	Password string `form:"password" json:"password" binding:"required,min=6,max=18"`
 }
 
-func GenerateToken(user model.User) (string, error) {
+func GenerateToken(userId uint) (string, error) {
 	claim := auth.JwtClaim{
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: time.Now().Add(auth.JwtExpireTime).Unix(),
 			IssuedAt:  time.Now().Unix(),
 		},
-		Data: user,
+		Data: userId,
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claim)
 	return token.SignedString(auth.JwtSecretKey)
@@ -40,7 +40,7 @@ func (service *UserLoginService) Login() *serializer.Response {
 		return serializer.ErrorResponse(serializer.CodePasswordError)
 	}
 
-	token, err := GenerateToken(user)
+	token, err := GenerateToken(user.ID)
 	if err != nil {
 		return serializer.ErrorResponse(serializer.CodeUnknownError)
 	}

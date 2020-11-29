@@ -20,7 +20,7 @@ type User struct {
 // UserProfile 用户信息模型
 type UserProfile struct {
 	gorm.Model
-	UserID      int
+	UserID      uint
 	Description string // 个人描述
 }
 

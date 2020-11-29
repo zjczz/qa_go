@@ -2,8 +2,9 @@ package api
 
 import (
 	"likezh/model"
-	"github.com/gin-gonic/gin"
 	"net/http"
+
+	"github.com/gin-gonic/gin"
 )
 
 // Index 主页
@@ -13,11 +14,10 @@ func Index(c *gin.Context) {
 
 // CurrentUser 获取当前用户
 func CurrentUser(c *gin.Context) *model.User {
-	if user, _ := c.Get("user"); user != nil {
-		if u, ok := user.(*model.User); ok {
-			return u
+	if userID, _ := c.Get("user"); userID != nil {
+		if user,err:=model.GetUser(userID);err==nil{
+			return &user;
 		}
 	}
 	return nil
 }
-
