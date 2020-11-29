@@ -9,8 +9,10 @@ type Question struct {
 	Title   string `gorm:"not null;"`           // 标题
 	Content string `gorm:"type:text;not null;"` // 内容
 }
-//
-func AddQuestion(qes *Question)int64{
-	result:=DB.Create(&qes);
-	return result.RowsAffected;
+
+// 用ID获取问题
+func GetQuestion(id uint) (Question, error) {
+	var question Question
+	result := DB.First(&question, id)
+	return question, result.Error
 }

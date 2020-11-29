@@ -25,6 +25,9 @@ func NewRouter() *gin.Engine {
 		// 登录
 		v1Group.POST("/user/login", v1.UserLogin)
 
+		// 查看单个问题
+		v1Group.GET("/questions/:id", v1.FindOneQuestion)
+
 		// 需要登录权限
 		jwt := v1Group.Group("")
 		jwt.Use(middleware.JwtRequired())
@@ -35,7 +38,8 @@ func NewRouter() *gin.Engine {
 			jwt.POST("/user/change_password", v1.ChangePassword)
 			// 退出登录
 			jwt.POST("/user/logout", v1.Logout)
-			jwt.POST("/question/add_question", v1.QuestionAdd)
+			// 发布问题
+			jwt.POST("/questions", v1.QuestionAdd)
 		}
 	}
 

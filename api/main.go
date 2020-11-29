@@ -16,7 +16,7 @@ func Index(c *gin.Context) {
 func CurrentUser(c *gin.Context) *model.User {
 	if userID, _ := c.Get("user"); userID != nil {
 		if user,err:=model.GetUser(userID);err==nil{
-			return &user;
+			return &user
 		}
 	}
 	return nil

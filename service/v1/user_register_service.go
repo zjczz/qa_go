@@ -10,7 +10,6 @@ type UserRegisterService struct {
 	UserName        string `form:"username" json:"username" binding:"required,min=3,max=30"`
 	Password        string `form:"password" json:"password" binding:"required,min=6,max=18"`
 	PasswordConfirm string `form:"password_confirm" json:"password_confirm" binding:"required,min=6,max=18"`
-	Nickname        string `form:"nickname" json:"nickname" binding:"required,min=2,max=30"`
 }
 
 // Valid 验证表单
@@ -31,7 +30,7 @@ func (service *UserRegisterService) Valid() *serializer.Response {
 func (service *UserRegisterService) Register() *serializer.Response {
 	user := model.User{
 		Username: service.UserName,
-		Nickname: service.Nickname,
+		Nickname: service.UserName,
 		Status:   model.Active,
 	}
 
@@ -49,6 +48,5 @@ func (service *UserRegisterService) Register() *serializer.Response {
 	if err := model.DB.Create(&user).Error; err != nil {
 		return serializer.ErrorResponse(serializer.CodeDatabaseError)
 	}
-
 	return serializer.OkResponse(serializer.BuildUserResponse(user))
 }
