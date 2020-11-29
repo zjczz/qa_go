@@ -8,31 +8,31 @@ import (
 // User 用户模型
 type User struct {
 	gorm.Model
-	Username      string      `gorm:"unique;not null;"` // 用户名
-	Password      string      `gorm:"not null;"`        // 密码
-	Email         string      `gorm:"unique;not null;"` // 邮箱
-	Nickname      string      // 昵称
-	Avatar        string      `gorm:"type:text;not null;"` // 头像
-	Status        int         `gorm:"not null;"`           // 状态
-	UserProfileID int         `gorm:"unique;not null;"`    // 用户信息外键
-	UserProfile   UserProfile // 用户信息
+	Username    string      `gorm:"unique;not null;"`        // 用户名
+	Password    string      `gorm:"not null;"`               // 密码
+	Email       string      `gorm:"default:null;unique;"`    // 邮箱
+	Nickname    string      `gorm:"default:null"`            // 昵称
+	Avatar      string      `gorm:"default:null;type:text;"` // 头像
+	Status      int         `gorm:"default:0;not null;"`     // 状态
+	UserProfile UserProfile // 关联用户信息
 }
 
 // UserProfile 用户信息模型
 type UserProfile struct {
 	gorm.Model
+	UserID      int
 	Description string // 个人描述
 }
 
 const (
 	// PasswordCost 密码加密难度
 	PasswordCost = bcrypt.DefaultCost
-	// Active 激活用户
-	Active string = "active"
 	// Inactive 未激活用户
-	Inactive string = "inactive"
+	Inactive int = 0
+	// Active 激活用户
+	Active int = 1
 	// Suspend 被封禁用户
-	Suspend string = "suspend"
+	Suspend int = 2
 )
 
 // GetUser 用ID获取用户
