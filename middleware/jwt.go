@@ -39,12 +39,12 @@ func JwtRequired() gin.HandlerFunc {
 			return
 		}
 
-		// 将Token也放入Context, 用于注销添加黑名单
+		// 将Token放入Context, 用于注销添加黑名单
 		c.Set("token", token.Raw)
 
-		// 将结构体地址存入上下文
+		// 将token携带的用户id信息存入上下文
 		if jwtStruct, ok := token.Claims.(*auth.JwtClaim); ok {
-			c.Set("user", &jwtStruct.Data)
+			c.Set("user_id", &jwtStruct.UserId)
 		}
 	}
 }

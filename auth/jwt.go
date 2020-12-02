@@ -1,7 +1,6 @@
 package auth
 
 import (
-
 	"github.com/dgrijalva/jwt-go"
 	"time"
 	"likezh/conf"
@@ -18,6 +17,5 @@ var (
 // Jwt 编码的结构体
 type JwtClaim struct {
 	jwt.StandardClaims
-	//Data model.User
-	Data uint
+	UserId uint
 }
