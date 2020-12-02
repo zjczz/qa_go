@@ -4,12 +4,14 @@ import "likezh/model"
 
 // 问题列表信息
 type QuestionsData struct {
+	Count     int            `json:"count"`
 	Questions []QuestionData `json:"questions"`
 }
 
 // 序列化问题列表
 func BuildQuestions(questions []model.Question) *QuestionsData {
 	questionsData := QuestionsData{}
+	questionsData.Count = len(questions)
 	questionsData.Questions = make([]QuestionData, len(questions))
 	for index, question := range questions {
 		user, _ := model.GetUser(question.UserId)
