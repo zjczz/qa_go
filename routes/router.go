@@ -27,6 +27,8 @@ func NewRouter() *gin.Engine {
 
 		// 查看单个问题
 		v1Group.GET("/questions/:id", v1.FindOneQuestion)
+		// 获取问题列表
+		v1Group.GET("/questions", v1.FindQuestions)
 
 		// 需要登录权限
 		jwt := v1Group.Group("")
