@@ -22,7 +22,7 @@ func GenerateToken(userId uint) (string, error) {
 			ExpiresAt: time.Now().Add(auth.JwtExpireTime).Unix(),
 			IssuedAt:  time.Now().Unix(),
 		},
-		Data: userId,
+		UserId: userId,
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claim)
 	return token.SignedString(auth.JwtSecretKey)
@@ -47,6 +47,7 @@ func (service *UserLoginService) Login() *serializer.Response {
 
 	data := gin.H{
 		"token": token,
+		"user": serializer.BuildUserData(&user),
 	}
-	return serializer.OkResponse(data)
+	return serializer.OkResponse(&data)
 }

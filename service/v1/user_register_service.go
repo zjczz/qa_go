@@ -30,8 +30,9 @@ func (service *UserRegisterService) Valid() *serializer.Response {
 func (service *UserRegisterService) Register() *serializer.Response {
 	user := model.User{
 		Username: service.UserName,
-		Nickname: service.UserName,
-		Status:   model.Active,
+		UserProfile: model.UserProfile{
+			Nickname: service.UserName,
+		},
 	}
 
 	// 表单验证
@@ -48,5 +49,5 @@ func (service *UserRegisterService) Register() *serializer.Response {
 	if err := model.DB.Create(&user).Error; err != nil {
 		return serializer.ErrorResponse(serializer.CodeDatabaseError)
 	}
-	return serializer.OkResponse(serializer.BuildUserResponse(user))
+	return serializer.OkResponse(serializer.BuildUserResponse(&user))
 }

@@ -10,10 +10,6 @@ type User struct {
 	gorm.Model
 	Username    string      `gorm:"unique;not null;"`        // 用户名
 	Password    string      `gorm:"not null;"`               // 密码
-	Email       string      `gorm:"default:null;unique;"`    // 邮箱
-	Nickname    string      `gorm:"default:null"`            // 昵称
-	Avatar      string      `gorm:"default:null;type:text;"` // 头像
-	Status      int         `gorm:"default:0;not null;"`     // 状态
 	UserProfile UserProfile // 关联用户信息
 }
 
@@ -21,7 +17,11 @@ type User struct {
 type UserProfile struct {
 	gorm.Model
 	UserID      uint
-	Description string // 个人描述
+	Nickname    string      `gorm:"default:null"`            // 昵称
+	Email       string      `gorm:"unique;default:null;"`    // 邮箱
+	Avatar      string      `gorm:"type:text;default:null;"` // 头像
+	Status      int         `gorm:"not null;default:0;"`     // 状态
+	Description string 		`gorm:"default:null"`			 // 个人描述
 }
 
 const (

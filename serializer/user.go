@@ -2,36 +2,40 @@ package serializer
 
 import "likezh/model"
 
-// userdata 用户序列化器
-type userdata struct {
-	ID        uint   `json:"id"`
-	Username  string `json:"username"`
-	Nickname  string `json:"nickname"`
-	Status    int    `json:"status"`
-	Avatar    string `json:"avatar"`
-	CreatedAt int64  `json:"created_at"`
+// UserData 单个用户信息
+type UserData struct {
+    ID          uint   `json:"id"`
+    Username    string `json:"username"`
+    Nickname    string `json:"nickname"`
+    Email       string `json:"email"`
+    Status      int    `json:"status"`
+    Avatar      string `json:"avatar"`
+    Description string `json:"description"`
+    CreatedAt   int64  `json:"created_at"`
 }
 
-// buildUser 序列化用户
-func buildUser(user model.User) *userdata {
-	return &userdata{
-		ID:        user.ID,
-		Username:  user.Username,
-		Nickname:  user.Nickname,
-		Status:    user.Status,
-		Avatar:    user.Avatar,
-		CreatedAt: user.CreatedAt.Unix(),
-	}
+// BuildUserData 序列化单个用户
+func BuildUserData(user *model.User) *UserData {
+    return &UserData{
+        ID:        user.ID,
+        Username:  user.Username,
+        Nickname:  user.UserProfile.Nickname,
+        Email: user.UserProfile.Email,
+        Status:    user.UserProfile.Status,
+        Avatar:    user.UserProfile.Avatar,
+        Description: user.UserProfile.Description,
+        CreatedAt: user.CreatedAt.Unix(),
+    }
 }
 
-// UserResponse 单个用户序列化
+// UserResponse 单个用户响应信息
 type UserResponse struct {
-	User *userdata `json:"user"`
+    User *UserData `json:"user"`
 }
 
-// BuildUserResponse 序列化用户响应
-func BuildUserResponse(user model.User) *UserResponse {
-	return &UserResponse{
-		User: buildUser(user),
-	}
+// BuildUserResponse 序列化单个用户响应
+func BuildUserResponse(user *model.User) *UserResponse {
+    return &UserResponse{
+        User: BuildUserData(user),
+    }
 }
