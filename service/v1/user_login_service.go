@@ -47,6 +47,7 @@ func (service *UserLoginService) Login() *serializer.Response {
 
 	data := gin.H{
 		"token": token,
+		"user": serializer.BuildUserData(&user),
 	}
-	return serializer.OkResponse(data)
+	return serializer.OkResponse(&data)
 }

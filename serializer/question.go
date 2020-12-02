@@ -17,10 +17,10 @@ func buildQuestion(qes model.Question) *questiondata {
 	user,_:=model.GetUser(qes.UserId)
 	return &questiondata{
 		ID:        qes.ID,
-		Nickname:  user.Nickname,
+		Nickname:  user.UserProfile.Nickname,
 		Title: qes.Title,
 		Content: qes.Content,
-		Avatar:    user.Avatar,
+		Avatar:    user.UserProfile.Avatar,
 		CreatedAt: qes.CreatedAt.Unix(),
 	}
 }

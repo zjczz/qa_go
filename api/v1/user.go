@@ -34,7 +34,7 @@ func UserLogin(c *gin.Context) {
 // UserMe 用户详情
 func UserMe(c *gin.Context) {
 	user := api.CurrentUser(c)
-	c.JSON(http.StatusOK, serializer.OkResponse(serializer.BuildUserResponse(*user)))
+	c.JSON(http.StatusOK, serializer.OkResponse(serializer.BuildUserResponse(user)))
 }
 
 // ChangePassword 修改密码

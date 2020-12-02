@@ -37,5 +37,5 @@ func (service *ChangePassword) Change(user *model.User) *serializer.Response {
 		return serializer.ErrorResponse(serializer.CodeDatabaseError)
 	}
 
-	return serializer.OkResponse(serializer.BuildUserResponse(*user))
+	return serializer.OkResponse(nil)
 }
