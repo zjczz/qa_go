@@ -10,9 +10,9 @@ type User struct {
     gorm.Model
     Username    string      `gorm:"unique;not null;"` // 用户名
     Password    string      `gorm:"not null;"`        // 密码
-    UserProfile UserProfile  // 关联用户信息
-    Questions []Question     // 关联问题信息
-    Answers []Answer         // 关联回答信息
+    UserProfile UserProfile `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`  // 关联用户信息
+    Questions []Question    `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`  // 关联问题信息
+    Answers []Answer        `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`  // 关联回答信息
 }
 
 // UserProfile 用户信息模型
