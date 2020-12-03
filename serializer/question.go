@@ -14,7 +14,7 @@ type QuestionData struct {
 
 // 序列化单个问题
 func BuildQuestion(qes *model.Question) *QuestionData {
-	user,_:=model.GetUser(qes.UserId)
+	user,_:=model.GetUser(qes.UserID)
 	return &QuestionData{
 		ID:        qes.ID,
 		Nickname:  user.UserProfile.Nickname,

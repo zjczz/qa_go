@@ -15,8 +15,8 @@ type QesAddService struct {
 // 
 func(qesAddService * QesAddService) QuestionAdd(user *model.User) *serializer.Response {
     qes := model.Question{
-        UserId: user.ID,
-        Title: qesAddService.Title ,
+        UserID:  user.ID,
+        Title:   qesAddService.Title ,
         Content: qesAddService.Content,
     }
 

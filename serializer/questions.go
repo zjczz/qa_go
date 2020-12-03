@@ -14,7 +14,7 @@ func BuildQuestions(questions []model.Question) *QuestionsData {
 	questionsData.Count = len(questions)
 	questionsData.Questions = make([]QuestionData, len(questions))
 	for index, question := range questions {
-		user, _ := model.GetUser(question.UserId)
+		user, _ := model.GetUser(question.UserID)
 		questionData := QuestionData{
 			ID:        question.ID,
 			Nickname:  user.UserProfile.Nickname,
