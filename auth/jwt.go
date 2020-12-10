@@ -2,8 +2,8 @@ package auth
 
 import (
 	"github.com/dgrijalva/jwt-go"
+	"qa_go/conf"
 	"time"
-	"likezh/conf"
 )
 
 const (

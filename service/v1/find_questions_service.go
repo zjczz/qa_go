@@ -1,8 +1,8 @@
 package v1
 
 import (
-	"likezh/model"
-	"likezh/serializer"
+	"qa_go/model"
+	"qa_go/serializer"
 )
 
 func FindQuestions(limit int, offset int) *serializer.Response {

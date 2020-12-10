@@ -1,9 +1,9 @@
 package routes
 
 import (
-	"likezh/api"
-	v1 "likezh/api/v1"
-	"likezh/middleware"
+	"qa_go/api"
+	v1 "qa_go/api/v1"
+	"qa_go/middleware"
 
 	"github.com/gin-gonic/gin"
 )

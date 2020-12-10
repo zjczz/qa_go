@@ -1,8 +1,8 @@
 package v1
 
 import (
-	"likezh/model"
-	"likezh/serializer"
+	"qa_go/model"
+	"qa_go/serializer"
 )
 
 // UserRegisterService 管理用户注册服务

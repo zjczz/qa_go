@@ -1,0 +1,46 @@
+version: '3'
+services:
+  mysql:
+    image: mysql:5.7.31
+    container_name: mysql
+    restart: always
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_general_ci
+    ports:
+      - 3306:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: 123456
+      MYSQL_ROOT_HOST: '%'
+    volumes:
+      - /var/docker/mysql/data:/var/lib/mysql
+      - /var/docker/mysql/config:/etc/mysql/conf.d
+  redis:
+    image: redis:6.0.6
+    container_name: myRedis
+    restart: always
+    ports:
+       - 6379:6379
+    volumes:
+      - /var/redis/data:/data:rw
+      - /usr/local/redis/redis.conf:/etc/redis/redis.conf:rw
+    command:
+      redis-server /etc/redis/redis.conf
+  rabbitmq:
+    image: rabbitmq:management
+    container_name: myrabbitmq
+    hostname: myrabbitmq
+    ports:
+      - 5672:5672
+      - 15672:15672
+    volumes:
+       - /var/docker/rabbitmq/data:/var/lib/rabbitmq
+    environment:
+      - RABBITMQ_DEFAULT_USER=admin
+      - RABBITMQ_DEFAULT_PASS=123456
+  qa_go:
+    build: .
+    depends_on:
+      - mysql
+      - redis
+      - rabbitmq
+    ports:
+      - "8000:8000"

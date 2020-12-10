@@ -1,12 +1,12 @@
 package middleware
 
 import (
-	"likezh/auth"
-	"likezh/cache"
-	"likezh/serializer"
-	"net/http"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
+	"net/http"
+	"qa_go/auth"
+	"qa_go/cache"
+	"qa_go/serializer"
 )
 
 // JwtRequired 需要在Header中传递token

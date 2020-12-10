@@ -1,10 +1,10 @@
 package v1
 
 import (
-	"likezh/api"
-	// "likezh/cache"
-	"likezh/serializer"
-	v1 "likezh/service/v1"
+	"qa_go/api"
+	// "qa_go/cache"
+	"qa_go/serializer"
+	v1 "qa_go/service/v1"
 
 	//"net/http"
 	"github.com/gin-gonic/gin"

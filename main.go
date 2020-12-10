@@ -1,15 +1,15 @@
 package main
 
 import (
-	"likezh/conf"
-	"likezh/routes"
+	"qa_go/conf"
+	"qa_go/routes"
 )
 
-func main(){
+func main() {
 
 	conf.Init()
 
-	r:=routes.NewRouter()
+	r := routes.NewRouter()
 
 	r.Run(":8000")
 }

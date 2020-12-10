@@ -1,13 +1,14 @@
 package conf
 
 import (
-	"likezh/cache"
-	"likezh/model"
 	"fmt"
+	"os"
+	"qa_go/cache"
+	"qa_go/model"
+	"time"
+
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
-	"os"
-	"time"
 )
 
 // 全局参数
@@ -40,14 +41,10 @@ func Init() {
 		go func() {
 			time.Sleep(1 * time.Second)
 			fmt.Println(`
-			 ____             _           ____       
-			|  _ \ _   _  ___| | ___   _ / ___| ___  
-			| | | | | | |/ __| |/ / | | | |  _ / _ \ 
-			| |_| | |_| | (__|   <| |_| | |_| | (_) |
-			|____/ \__,_|\___|_|\_\\__, |\____|\___/ 
-								   |___/             
+		--------------------------------------------          
 			 服务器已经启动成功啦~  现在是Release模式~
 				如果网站访问403, 请检查跨域配置哦.
+		-------------------------------------------- 
 		`)
 		}()
 	}

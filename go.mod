@@ -1,4 +1,4 @@
-module likezh
+module qa_go
 
 go 1.14
 

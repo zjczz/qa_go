@@ -1,8 +1,8 @@
 package v1
 
 import (
-	"likezh/model"
-	"likezh/serializer"
+	"qa_go/model"
+	"qa_go/serializer"
 )
 
 // ChangePassword 修改用户密码

@@ -1,6 +1,6 @@
 package serializer
 
-import "likezh/model"
+import "qa_go/model"
 
 // 问题列表信息
 type QuestionsData struct {

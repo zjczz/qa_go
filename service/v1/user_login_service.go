@@ -1,9 +1,9 @@
 package v1
 
 import (
-	"likezh/auth"
-	"likezh/model"
-	"likezh/serializer"
+	"qa_go/auth"
+	"qa_go/model"
+	"qa_go/serializer"
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
@@ -47,7 +47,7 @@ func (service *UserLoginService) Login() *serializer.Response {
 
 	data := gin.H{
 		"token": token,
-		"user": serializer.BuildUserData(&user),
+		"user":  serializer.BuildUserData(&user),
 	}
 	return serializer.OkResponse(&data)
 }

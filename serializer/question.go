@@ -1,25 +1,25 @@
 package serializer
 
-import "likezh/model"
+import "qa_go/model"
 
 // 单个问题信息
 type QuestionData struct {
-	ID        uint    `json:"id"`
-	Title  	  string  `json:"title"`
-	Content   string  `json:"content"`
-	Nickname  string  `json:"nickname"`
-	Avatar    string  `json:"avatar"`
-	CreatedAt int64   `json:"created_at"`
+	ID        uint   `json:"id"`
+	Title     string `json:"title"`
+	Content   string `json:"content"`
+	Nickname  string `json:"nickname"`
+	Avatar    string `json:"avatar"`
+	CreatedAt int64  `json:"created_at"`
 }
 
 // 序列化单个问题
 func BuildQuestion(qes *model.Question) *QuestionData {
-	user,_:=model.GetUser(qes.UserID)
+	user, _ := model.GetUser(qes.UserID)
 	return &QuestionData{
 		ID:        qes.ID,
 		Nickname:  user.UserProfile.Nickname,
-		Title: qes.Title,
-		Content: qes.Content,
+		Title:     qes.Title,
+		Content:   qes.Content,
 		Avatar:    user.UserProfile.Avatar,
 		CreatedAt: qes.CreatedAt.Unix(),
 	}
