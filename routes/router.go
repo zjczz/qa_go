@@ -3,7 +3,8 @@ package routes
 import (
 	"qa_go/api"
 	v1 "qa_go/api/v1"
-	"qa_go/middleware"
+
+	"qa_go/middleware/auth"
 
 	"github.com/gin-gonic/gin"
 )
@@ -11,9 +12,6 @@ import (
 // NewRouter 路由配置
 func NewRouter() *gin.Engine {
 	r := gin.Default()
-
-	// 中间件, 顺序不能改
-	r.Use(middleware.Cors())
 
 	// 主页
 	r.GET("/", api.Index)
@@ -32,7 +30,7 @@ func NewRouter() *gin.Engine {
 
 		// 需要登录权限
 		jwt := v1Group.Group("")
-		jwt.Use(middleware.JwtRequired())
+		jwt.Use(auth.JwtRequired())
 		{
 			// 查看个人信息
 			jwt.GET("/user/me", v1.UserMe)
