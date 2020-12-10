@@ -1,13 +1,12 @@
 # qa_go
-===========================
 
 ## 环境依赖
 
-go
-gorm
-redis
-mysql
-docker
+- go
+- gorm
+- redis
+- mysql
+- docker
 
 ## 部署步骤
 
@@ -22,13 +21,11 @@ docker
 
 │   ├── v1           api版本
 
-├── auth             授权jwt
-
 ├── cache            redis配置相关 
 
 ├── conf             读取本地环境变量
 
-├── middleware       常用跨域、jwt、日志等中间件
+├── middleware       中间件
 
 ├── model            数据库实体以及组合使用的gorm操作
 
@@ -40,7 +37,7 @@ docker
 
 ├── utils            常用工具类
 
-├── example.env      环境变量配置
+├── example.env      环境变量示例
 
 
 
