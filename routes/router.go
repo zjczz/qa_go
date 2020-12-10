@@ -12,9 +12,6 @@ import (
 func NewRouter() *gin.Engine {
 	r := gin.Default()
 
-	// 中间件, 顺序不能改
-	r.Use(middleware.Cors())
-
 	// 主页
 	r.GET("/", api.Index)
 
