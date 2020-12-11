@@ -26,7 +26,7 @@
 - [Jwt-Go](https://github.com/dgrijalva/jwt-go): Golang JWT组件，本项目使用基于 jwt 实现的 token 来做身份验证
 - [crypto](https://pkg.go.dev/golang.org/x/crypto): Golang 加密算法库，本项目使用其中的 bcrypto 算法来加密用户密码
 
-## 目录结构描述
+## 目录结构
 
 ```
 ├── api              controller层，负责处理请求
