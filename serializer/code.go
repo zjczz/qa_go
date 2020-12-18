@@ -29,6 +29,7 @@ const (
 const (
 	CodeQuestionIdError errorCode = 3001
 	CodeQuestionsError  errorCode = 3002
+	CodeQuestionNotOwn  errorCode = 3003
 )
 
 // 错误码与描述信息map
@@ -48,6 +49,7 @@ var msgMap = map[errorCode]string{
 
 	CodeQuestionIdError: "无效的问题id",
 	CodeQuestionsError:  "获取问题列表错误",
+	CodeQuestionNotOwn:  "用户无权处理该问题",
 }
 
 // 根据错误码得到对应说明

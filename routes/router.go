@@ -40,6 +40,10 @@ func NewRouter() *gin.Engine {
 			jwt.POST("/user/logout", v1.Logout)
 			// 发布问题
 			jwt.POST("/questions", v1.QuestionAdd)
+			// 修改问题
+			jwt.PUT("/questions/:id", v1.EditQuestion)
+			// 删除问题
+			jwt.DELETE("/questions/:id", v1.DeleteQuestion)
 		}
 	}
 

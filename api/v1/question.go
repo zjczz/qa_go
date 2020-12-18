@@ -45,3 +45,29 @@ func FindQuestions(c *gin.Context) {
 	res := v1.FindQuestions(limit, offset)
 	c.JSON(200, res)
 }
+
+// 修改问题
+func EditQuestion(c *gin.Context) {
+	id, err := strconv.Atoi(c.Param("id"))
+	user := api.CurrentUser(c)
+	var service v1.EditQuestionService
+	err = c.ShouldBind(&service)
+	if err != nil {
+		c.JSON(200, serializer.ErrorResponse(serializer.CodeParamError))
+		return
+	}
+	res := service.EditQuestion(user, uint(id))
+	c.JSON(200, res)
+}
+
+// 删除问题
+func DeleteQuestion(c *gin.Context) {
+	id, err := strconv.Atoi(c.Param("id"))
+	user := api.CurrentUser(c)
+	if err != nil {
+		c.JSON(200, serializer.ErrorResponse(serializer.CodeParamError))
+		return
+	}
+	res := v1.DeleteQuestion(user, uint(id))
+	c.JSON(200, res)
+}
