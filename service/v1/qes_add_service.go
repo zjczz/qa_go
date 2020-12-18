@@ -5,13 +5,11 @@ import (
 	"qa_go/serializer"
 )
 
-//
 type QesAddService struct {
 	Title   string `form:"title" json:"title" binding:"required"`
-	Content string `form:"content" json:"content" binding:"required"`
+	Content string `form:"content" json:"content"`
 }
 
-//
 func (qesAddService *QesAddService) QuestionAdd(user *model.User) *serializer.Response {
 	qes := model.Question{
 		UserID:  user.ID,
@@ -19,7 +17,6 @@ func (qesAddService *QesAddService) QuestionAdd(user *model.User) *serializer.Re
 		Content: qesAddService.Content,
 	}
 
-	//
 	if err := model.DB.Create(&qes).Error; err != nil {
 		return serializer.ErrorResponse(serializer.CodeDatabaseError)
 	}

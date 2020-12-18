@@ -28,8 +28,7 @@ const (
 // 问题相关的错误
 const (
 	CodeQuestionIdError errorCode = 3001
-	CodeQuestionsError  errorCode = 3002
-	CodeQuestionNotOwn  errorCode = 3003
+	CodeQuestionNotOwn  errorCode = 3002
 )
 
 // 错误码与描述信息map
@@ -48,7 +47,6 @@ var msgMap = map[errorCode]string{
 	CodePasswordError:     "登录失败，密码错误",
 
 	CodeQuestionIdError: "无效的问题id",
-	CodeQuestionsError:  "获取问题列表错误",
 	CodeQuestionNotOwn:  "用户无权处理该问题",
 }
 
