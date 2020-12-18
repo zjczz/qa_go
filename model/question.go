@@ -7,7 +7,7 @@ type Question struct {
 	gorm.Model
 	UserID  uint     `gorm:"not null;"`                                     // 问题所属用户Id
 	Title   string   `gorm:"not null;"`                                     // 标题
-	Content string   `gorm:"type:text;not null;"`                           // 内容
+	Content string   `gorm:"type:text"`                                     // 内容
 	Answers []Answer `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"` // 关联回答信息
 }
 

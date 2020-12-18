@@ -8,7 +8,7 @@ import (
 // EditQuestionService 管理修改问题的服务
 type EditQuestionService struct {
 	Title   string `form:"title" json:"title" binding:"required"`
-	Content string `form:"content" json:"content" binding:"required"`
+	Content string `form:"content" json:"content"`
 }
 
 // isQuestionOwner 判断用户是否拥有该问题
@@ -46,6 +46,6 @@ func DeleteQuestion(user *model.User, id uint) *serializer.Response {
 	if err := model.DeleteQuestion(id); err != nil {
 		return serializer.ErrorResponse(serializer.CodeDatabaseError)
 	} else {
-		return serializer.OkResponse(serializer.CodeOk)
+		return serializer.OkResponse(nil)
 	}
 }
