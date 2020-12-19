@@ -37,10 +37,7 @@ func NewRouter() *gin.Engine {
 		{
 			// 查看个人信息
 			jwt.GET("/user/me", v1.UserMe)
-			// 修改密码
-			jwt.POST("/user/change_password", v1.ChangePassword)
-			// 退出登录
-			jwt.POST("/user/logout", v1.Logout)
+
 			// 发布问题
 			jwt.POST("/questions", v1.QuestionAdd)
 			// 修改问题
