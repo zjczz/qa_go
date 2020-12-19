@@ -24,9 +24,12 @@ func NewRouter() *gin.Engine {
 		v1Group.POST("/user/login", v1.UserLogin)
 
 		// 查看单个问题
-		v1Group.GET("/questions/:id", v1.FindOneQuestion)
+		v1Group.GET("/questions/:qid", v1.FindOneQuestion)
 		// 获取问题列表
 		v1Group.GET("/questions", v1.FindQuestions)
+
+		// 查看单个回答
+		v1Group.GET("/questions/:qid/answers/:aid", v1.FindAnswer)
 
 		// 需要登录权限
 		jwt := v1Group.Group("")
@@ -34,16 +37,16 @@ func NewRouter() *gin.Engine {
 		{
 			// 查看个人信息
 			jwt.GET("/user/me", v1.UserMe)
-			// 修改密码
-			jwt.POST("/user/change_password", v1.ChangePassword)
-			// 退出登录
-			jwt.POST("/user/logout", v1.Logout)
+
 			// 发布问题
 			jwt.POST("/questions", v1.QuestionAdd)
 			// 修改问题
-			jwt.PUT("/questions/:id", v1.EditQuestion)
+			jwt.PUT("/questions/:qid", v1.EditQuestion)
 			// 删除问题
-			jwt.DELETE("/questions/:id", v1.DeleteQuestion)
+			jwt.DELETE("/questions/:qid", v1.DeleteQuestion)
+
+			// 回答问题
+			jwt.POST("/questions/:qid/answers", v1.AddAnswer)
 		}
 	}
 

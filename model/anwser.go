@@ -9,3 +9,10 @@ type Answer struct {
 	QuestionID uint   `gorm:"not null;"`           // 回答所属问题Id
 	Content    string `gorm:"type:text;not null;"` // 内容
 }
+
+// GetAnswer 用ID获取回答
+func GetAnswer(id uint) (*Answer, error) {
+	var answer Answer
+	result := DB.First(&answer, id)
+	return &answer, result.Error
+}

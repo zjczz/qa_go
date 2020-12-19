@@ -7,8 +7,9 @@ import (
 	v1 "qa_go/service/v1"
 
 	//"net/http"
-	"github.com/gin-gonic/gin"
 	"strconv"
+
+	"github.com/gin-gonic/gin"
 )
 
 // 发表问题
@@ -25,7 +26,7 @@ func QuestionAdd(c *gin.Context) {
 
 // 查看单个问题
 func FindOneQuestion(c *gin.Context) {
-	qid, err := strconv.Atoi(c.Param("id"))
+	qid, err := strconv.Atoi(c.Param("qid"))
 	if err != nil {
 		c.JSON(200, serializer.ErrorResponse(serializer.CodeParamError))
 		return
@@ -48,7 +49,7 @@ func FindQuestions(c *gin.Context) {
 
 // 修改问题
 func EditQuestion(c *gin.Context) {
-	id, err := strconv.Atoi(c.Param("id"))
+	id, err := strconv.Atoi(c.Param("qid"))
 	user := api.CurrentUser(c)
 	var service v1.EditQuestionService
 	err = c.ShouldBind(&service)
@@ -62,7 +63,7 @@ func EditQuestion(c *gin.Context) {
 
 // 删除问题
 func DeleteQuestion(c *gin.Context) {
-	id, err := strconv.Atoi(c.Param("id"))
+	id, err := strconv.Atoi(c.Param("qid"))
 	user := api.CurrentUser(c)
 	if err != nil {
 		c.JSON(200, serializer.ErrorResponse(serializer.CodeParamError))
