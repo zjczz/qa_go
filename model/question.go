@@ -18,8 +18,8 @@ func GetQuestion(id uint) (Question, error) {
 	return question, result.Error
 }
 
-// GetQuestions 用获取问题列表，按创建时间降序排列
-func GetQuestions(limit int, offset int) ([]Question, error) {
+// GetHotQuestions 用获取热门问题列表，按创建时间降序排列(后续按分数排序)
+func GetHotQuestions(limit int, offset int) ([]Question, error) {
 	var questions []Question
 	result := DB.Order("created_at desc").Limit(limit).Offset(offset).Find(&questions)
 	return questions, result.Error

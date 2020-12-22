@@ -35,15 +35,15 @@ func FindOneQuestion(c *gin.Context) {
 	c.JSON(200, res)
 }
 
-// 获取问题列表
-func FindQuestions(c *gin.Context) {
+// 获取热门问题列表
+func FindHotQuestions(c *gin.Context) {
 	limit, err := strconv.Atoi(c.DefaultQuery("limit", "20"))
 	offset, err := strconv.Atoi(c.DefaultQuery("offset", "0"))
 	if err != nil {
 		c.JSON(200, serializer.ErrorResponse(serializer.CodeParamError))
 		return
 	}
-	res := v1.FindQuestions(limit, offset)
+	res := v1.FindHotQuestions(limit, offset)
 	c.JSON(200, res)
 }
 

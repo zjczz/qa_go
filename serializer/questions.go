@@ -8,8 +8,8 @@ type QuestionsData struct {
 	Questions []QuestionData `json:"questions"`
 }
 
-// 序列化问题列表
-func BuildQuestions(questions []model.Question) *QuestionsData {
+// 序列化热门问题列表
+func BuildHotQuestions(questions []model.Question) *QuestionsData {
 	questionsData := QuestionsData{}
 	questionsData.Count = len(questions)
 	questionsData.Questions = make([]QuestionData, len(questions))
@@ -33,9 +33,9 @@ type QuestionsResponse struct {
 	QuestionsData
 }
 
-// 序列化问题列表响应
-func BuildQuestionsResponse(questions []model.Question) *QuestionsResponse {
+// 序列化热门问题列表响应
+func BuildHotQuestionsResponse(questions []model.Question) *QuestionsResponse {
 	return &QuestionsResponse{
-		*BuildQuestions(questions),
+		*BuildHotQuestions(questions),
 	}
 }

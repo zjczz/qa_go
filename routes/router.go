@@ -25,8 +25,9 @@ func NewRouter() *gin.Engine {
 
 		// 查看单个问题
 		v1Group.GET("/questions/:qid", v1.FindOneQuestion)
-		// 获取问题列表
-		v1Group.GET("/questions", v1.FindQuestions)
+
+		// 获取热门问题列表
+		v1Group.GET("/hot_questions", v1.FindHotQuestions)
 
 		// 查看单个回答
 		v1Group.GET("/questions/:qid/answers/:aid", v1.FindAnswer)
