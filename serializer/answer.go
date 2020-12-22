@@ -15,14 +15,14 @@ type AnswerData struct {
 
 // 序列化单个回答
 func BuildAnswer(ans *model.Answer) *AnswerData {
-	user, _ := model.GetUser(ans.UserID)
+	profile, _ := model.GetUserProfile(ans.UserID)
 	return &AnswerData{
 		ID:          ans.ID,
 		QuestionID:  ans.QuestionID,
 		Content:     ans.Content,
-		Avatar:      user.UserProfile.Avatar,
-		Nickname:    user.UserProfile.Nickname,
-		Description: user.UserProfile.Description,
+		Avatar:      profile.Avatar,
+		Nickname:    profile.Nickname,
+		Description: profile.Description,
 		CreatedAt:   ans.CreatedAt.Unix(),
 	}
 }

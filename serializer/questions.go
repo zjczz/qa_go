@@ -14,13 +14,13 @@ func BuildQuestions(questions []model.Question) *QuestionsData {
 	questionsData.Count = len(questions)
 	questionsData.Questions = make([]QuestionData, len(questions))
 	for index, question := range questions {
-		user, _ := model.GetUser(question.UserID)
+		profile, _ := model.GetUserProfile(question.UserID)
 		questionData := QuestionData{
 			ID:        question.ID,
-			Nickname:  user.UserProfile.Nickname,
+			Nickname:  profile.Nickname,
 			Title:     question.Title,
 			Content:   question.Content,
-			Avatar:    user.UserProfile.Avatar,
+			Avatar:    profile.Avatar,
 			CreatedAt: question.CreatedAt.Unix(),
 		}
 		questionsData.Questions[index] = questionData

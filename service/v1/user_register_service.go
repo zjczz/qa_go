@@ -1,6 +1,8 @@
 package v1
 
 import (
+	"fmt"
+	"math/rand"
 	"qa_go/model"
 	"qa_go/serializer"
 )
@@ -28,10 +30,14 @@ func (service *UserRegisterService) Valid() *serializer.Response {
 
 // Register 用户注册
 func (service *UserRegisterService) Register() *serializer.Response {
+	// 生成随机初始头像
+	avatar := fmt.Sprintf("http://images.nowcoder.com/head/%dt.png", rand.Intn(1000))
+
 	user := model.User{
 		Username: service.UserName,
 		UserProfile: model.UserProfile{
 			Nickname: service.UserName,
+			Avatar:   avatar,
 		},
 	}
 

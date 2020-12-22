@@ -32,7 +32,7 @@ func GenerateToken(userId uint) (string, error) {
 func (service *UserLoginService) Login() *serializer.Response {
 	var user model.User
 
-	if err := model.DB.Where("username = ?", service.Username).First(&user).Error; err != nil {
+	if err := model.DB.Where("username = ?", service.Username).Preload("UserProfile").First(&user).Error; err != nil {
 		return serializer.ErrorResponse(serializer.CodeUserNotExistError)
 	}
 
