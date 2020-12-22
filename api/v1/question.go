@@ -47,6 +47,18 @@ func FindHotQuestions(c *gin.Context) {
 	c.JSON(200, res)
 }
 
+// 获取首页问题列表
+func FindQuestions(c *gin.Context) {
+	limit, err := strconv.Atoi(c.DefaultQuery("limit", "20"))
+	offset, err := strconv.Atoi(c.DefaultQuery("offset", "0"))
+	if err != nil {
+		c.JSON(200, serializer.ErrorResponse(serializer.CodeParamError))
+		return
+	}
+	res := v1.FindQuestions(limit, offset)
+	c.JSON(200, res)
+}
+
 // 修改问题
 func EditQuestion(c *gin.Context) {
 	id, err := strconv.Atoi(c.Param("qid"))

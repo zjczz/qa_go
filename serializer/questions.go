@@ -2,8 +2,8 @@ package serializer
 
 import "qa_go/model"
 
-// 问题列表信息
-type QuestionsData struct {
+// 热门问题列表信息
+type HotQuestionsData struct {
 	Count     int            `json:"count"`
 	Questions []QuestionData `json:"questions"`
 }
@@ -87,8 +87,15 @@ type QuestionsResponse struct {
 }
 
 // 序列化热门问题列表响应
-func BuildHotQuestionsResponse(questions []model.Question) *QuestionsResponse {
-	return &QuestionsResponse{
+func BuildHotQuestionsResponse(questions []model.Question) *HotQuestionsResponse {
+	return &HotQuestionsResponse{
 		*BuildHotQuestions(questions),
+	}
+}
+
+// 序列化首页问题列表响应
+func BuildQuestionsResponse(questions []model.Question) *QuestionsResponse {
+	return &QuestionsResponse{
+		*BuildQuestions(questions),
 	}
 }

@@ -25,6 +25,20 @@ func GetHotQuestions(limit int, offset int) ([]Question, error) {
 	return questions, result.Error
 }
 
+// GetQuestions 用获取首页问题列表，按创建时间降序排列，如果问题下有回答加载一个最新回答
+func GetQuestions(limit int, offset int) ([]Question, error) {
+	var questions []Question
+	result := DB.Order("created_at desc").Limit(limit).Offset(offset).Find(&questions)
+	for i := 0; i < len(questions); i++ {
+		var answer Answer
+		DB.Where("question_id = ?", questions[i].ID).Limit(1).Find(&answer)
+		if answer.ID != 0 {
+			questions[i].Answers = append(questions[i].Answers, answer)
+		}
+	}
+	return questions, result.Error
+}
+
 // UpdateQuestion 根据ID修改问题
 func UpdateQuestion(id uint, columns map[string]interface{}) (Question, error) {
 	var question Question

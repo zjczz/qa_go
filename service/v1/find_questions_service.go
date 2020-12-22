@@ -12,3 +12,11 @@ func FindHotQuestions(limit int, offset int) *serializer.Response {
 	}
 	return serializer.ErrorResponse(serializer.CodeDatabaseError)
 }
+
+// 获取首页问题列表，并加载其回答
+func FindQuestions(limit int, offset int) *serializer.Response {
+	if questions, err := model.GetQuestions(limit, offset); err == nil {
+		return serializer.OkResponse(serializer.BuildQuestionsResponse(questions))
+	}
+	return serializer.ErrorResponse(serializer.CodeDatabaseError)
+}
