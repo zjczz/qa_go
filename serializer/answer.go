@@ -11,11 +11,16 @@ type AnswerData struct {
 	Nickname    string `json:"nickname"`
 	Description string `json:"description"`
 	CreatedAt   int64  `json:"created_at"`
+	Own 		bool   `json:"own"`
 }
 
 // 序列化单个回答
-func BuildAnswer(ans *model.Answer) *AnswerData {
+func BuildAnswer(ans *model.Answer,uid uint) *AnswerData {
 	profile, _ := model.GetUserProfile(ans.UserID)
+	// own:= false
+	// if ans.UserID==uid{
+	// 	own=true
+	// }
 	return &AnswerData{
 		ID:          ans.ID,
 		QuestionID:  ans.QuestionID,
@@ -24,6 +29,7 @@ func BuildAnswer(ans *model.Answer) *AnswerData {
 		Nickname:    profile.Nickname,
 		Description: profile.Description,
 		CreatedAt:   ans.CreatedAt.Unix(),
+		Own:		 uid==ans.UserID,
 	}
 }
 
@@ -33,8 +39,8 @@ type AnswerResponse struct {
 }
 
 // 序列化单个问题响应
-func BuildAnswerResponse(answer *model.Answer) *AnswerResponse {
+func BuildAnswerResponse(answer *model.Answer,uid uint) *AnswerResponse {
 	return &AnswerResponse{
-		Answer: BuildAnswer(answer),
+		Answer: BuildAnswer(answer,uid),
 	}
 }

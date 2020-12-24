@@ -4,13 +4,13 @@ import (
 	"qa_go/serializer"
 	"strconv"
 
-	v1 "qa_go/service/v1"
+	v1 "qa_go/service/v1/answer"
 
 	"qa_go/api"
 
 	"github.com/gin-gonic/gin"
 )
-
+//添加回答
 func AddAnswer(c *gin.Context) {
 	// qid 所属问题id
 	qid, err := strconv.Atoi(c.Param("qid"))
@@ -27,7 +27,13 @@ func AddAnswer(c *gin.Context) {
 	}
 
 	user := api.CurrentUser(c)
-	res := service.AddAnswer(user, uint(qid))
+	var uid uint
+	if user==nil{
+		uid=0
+	}else{
+		uid=user.ID
+	}
+	res := service.AddAnswer(user, uint(qid),uid)
 	c.JSON(200, res)
 }
 
@@ -44,7 +50,13 @@ func FindAnswer(c *gin.Context) {
 		c.JSON(200, serializer.ErrorResponse(serializer.CodeParamError))
 		return
 	}
-
-	res := v1.FindOneAnswer(uint(qid), uint(aid))
+	user := api.CurrentUser(c)
+	var uid uint
+	if user==nil{
+		uid=0
+	}else{
+		uid=user.ID
+	}
+	res := v1.FindOneAnswer(uint(qid), uint(aid),uid)
 	c.JSON(200, res)
 }

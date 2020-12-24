@@ -17,6 +17,7 @@ func NewRouter() *gin.Engine {
 	r.GET("/", api.Index)
 
 	v1Group := r.Group("/api/v1")
+	v1Group.Use(auth.JwtWithAnonymous())
 	{
 		// 注册
 		v1Group.POST("/user/register", v1.UserRegister)
@@ -34,6 +35,7 @@ func NewRouter() *gin.Engine {
 
 		// 查看单个回答
 		v1Group.GET("/questions/:qid/answers/:aid", v1.FindAnswer)
+		
 
 		// 需要登录权限
 		jwt := v1Group.Group("")

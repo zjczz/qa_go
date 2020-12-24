@@ -4,7 +4,7 @@ import (
 	"qa_go/api"
 	// "qa_go/cache"
 	"qa_go/serializer"
-	v1 "qa_go/service/v1"
+	v1 "qa_go/service/v1/question"
 
 	//"net/http"
 	"strconv"
@@ -25,13 +25,31 @@ func QuestionAdd(c *gin.Context) {
 }
 
 // 查看单个问题
+// func FindOneQuestion(c *gin.Context) {
+// 	qid, err := strconv.Atoi(c.Param("qid"))
+// 	if err != nil {
+// 		c.JSON(200, serializer.ErrorResponse(serializer.CodeParamError))
+// 		return
+// 	}
+// 	res := v1.FindOneQuestion(uint(qid))
+// 	c.JSON(200, res)
+// }
+
+//查看单个普通问题
 func FindOneQuestion(c *gin.Context) {
 	qid, err := strconv.Atoi(c.Param("qid"))
 	if err != nil {
 		c.JSON(200, serializer.ErrorResponse(serializer.CodeParamError))
 		return
 	}
-	res := v1.FindOneQuestion(uint(qid))
+	user := api.CurrentUser(c)
+	var uid uint
+	if user==nil{
+		uid=0
+	}else{
+		uid=user.ID
+	}
+	res := v1.FindOneQuestion(uint(qid),uid)
 	c.JSON(200, res)
 }
 

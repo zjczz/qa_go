@@ -11,7 +11,7 @@ type AddAnswerService struct {
 }
 
 // 回答问题
-func (service *AddAnswerService) AddAnswer(user *model.User, qid uint) *serializer.Response {
+func (service *AddAnswerService) AddAnswer(user *model.User, qid uint,uid uint) *serializer.Response {
 	answer := &model.Answer{
 		UserID:     user.ID,
 		QuestionID: qid,
@@ -21,16 +21,16 @@ func (service *AddAnswerService) AddAnswer(user *model.User, qid uint) *serializ
 	if err := model.DB.Create(answer).Error; err != nil {
 		return serializer.ErrorResponse(serializer.CodeDatabaseError)
 	}
-	return serializer.OkResponse(serializer.BuildAnswerResponse(answer))
+	return serializer.OkResponse(serializer.BuildAnswerResponse(answer,uid))
 }
 
 // 查看单个问题
-func FindOneAnswer(qid uint, aid uint) *serializer.Response {
+func FindOneAnswer(qid uint, aid uint,uid uint) *serializer.Response {
 	if answer, err := model.GetAnswer(aid); err == nil {
 		if answer.QuestionID != qid {
 			return serializer.ErrorResponse(serializer.CodeQidMismatchError)
 		}
-		return serializer.OkResponse(serializer.BuildAnswerResponse(answer))
+		return serializer.OkResponse(serializer.BuildAnswerResponse(answer,uid))
 	}
 	return serializer.ErrorResponse(serializer.CodeAnswerIdError)
 }
