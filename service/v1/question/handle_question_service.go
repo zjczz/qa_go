@@ -34,7 +34,7 @@ func (editQuestionService *EditQuestionService) EditQuestion(user *model.User, i
 	}); err != nil {
 		return serializer.ErrorResponse(serializer.CodeDatabaseError)
 	} else {
-		return serializer.OkResponse(serializer.BuildQuestionResponse(&question))
+		return serializer.OkResponse(serializer.BuildQuestionResponse(question, user.ID))
 	}
 }
 

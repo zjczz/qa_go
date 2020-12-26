@@ -12,10 +12,10 @@ type Question struct {
 }
 
 // GetQuestion 用ID获取问题
-func GetQuestion(id uint) (Question, error) {
+func GetQuestion(id uint) (*Question, error) {
 	var question Question
 	result := DB.First(&question, id)
-	return question, result.Error
+	return &question, result.Error
 }
 
 // GetHotQuestions 用获取热门问题列表，按创建时间降序排列(后续按分数排序)
@@ -40,10 +40,10 @@ func GetQuestions(limit int, offset int) ([]Question, error) {
 }
 
 // UpdateQuestion 根据ID修改问题
-func UpdateQuestion(id uint, columns map[string]interface{}) (Question, error) {
+func UpdateQuestion(id uint, columns map[string]interface{}) (*Question, error) {
 	var question Question
 	result := DB.Model(&question).Where("id = ?", id).Updates(columns).Find(&question)
-	return question, result.Error
+	return &question, result.Error
 }
 
 // DeleteQuestion 根据ID删除问题

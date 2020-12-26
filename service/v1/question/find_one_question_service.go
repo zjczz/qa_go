@@ -5,9 +5,9 @@ import (
 	"qa_go/serializer"
 )
 
-func FindOneQuestion(id uint,uid uint) *serializer.Response {
+func FindOneQuestion(id uint, uid uint) *serializer.Response {
 	if question, err := model.GetQuestion(id); err == nil {
-		return serializer.OkResponse(serializer.BuildQesResponse(&question,uid))
+		return serializer.OkResponse(serializer.BuildQuestionResponse(question, uid))
 	}
 	return serializer.ErrorResponse(serializer.CodeQuestionIdError)
 }

@@ -2,11 +2,8 @@ package v1
 
 import (
 	"qa_go/api"
-	// "qa_go/cache"
 	"qa_go/serializer"
 	v1 "qa_go/service/v1/question"
-
-	//"net/http"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
@@ -24,18 +21,7 @@ func QuestionAdd(c *gin.Context) {
 	}
 }
 
-// 查看单个问题
-// func FindOneQuestion(c *gin.Context) {
-// 	qid, err := strconv.Atoi(c.Param("qid"))
-// 	if err != nil {
-// 		c.JSON(200, serializer.ErrorResponse(serializer.CodeParamError))
-// 		return
-// 	}
-// 	res := v1.FindOneQuestion(uint(qid))
-// 	c.JSON(200, res)
-// }
-
-//查看单个普通问题
+// 查看问题
 func FindOneQuestion(c *gin.Context) {
 	qid, err := strconv.Atoi(c.Param("qid"))
 	if err != nil {
@@ -44,36 +30,12 @@ func FindOneQuestion(c *gin.Context) {
 	}
 	user := api.CurrentUser(c)
 	var uid uint
-	if user==nil{
-		uid=0
-	}else{
-		uid=user.ID
+	if user == nil {
+		uid = 0
+	} else {
+		uid = user.ID
 	}
-	res := v1.FindOneQuestion(uint(qid),uid)
-	c.JSON(200, res)
-}
-
-// 获取热门问题列表
-func FindHotQuestions(c *gin.Context) {
-	limit, err := strconv.Atoi(c.DefaultQuery("limit", "20"))
-	offset, err := strconv.Atoi(c.DefaultQuery("offset", "0"))
-	if err != nil {
-		c.JSON(200, serializer.ErrorResponse(serializer.CodeParamError))
-		return
-	}
-	res := v1.FindHotQuestions(limit, offset)
-	c.JSON(200, res)
-}
-
-// 获取首页问题列表
-func FindQuestions(c *gin.Context) {
-	limit, err := strconv.Atoi(c.DefaultQuery("limit", "20"))
-	offset, err := strconv.Atoi(c.DefaultQuery("offset", "0"))
-	if err != nil {
-		c.JSON(200, serializer.ErrorResponse(serializer.CodeParamError))
-		return
-	}
-	res := v1.FindQuestions(limit, offset)
+	res := v1.FindOneQuestion(uint(qid), uid)
 	c.JSON(200, res)
 }
 
@@ -100,5 +62,29 @@ func DeleteQuestion(c *gin.Context) {
 		return
 	}
 	res := v1.DeleteQuestion(user, uint(id))
+	c.JSON(200, res)
+}
+
+// 获取首页问题列表
+func FindQuestions(c *gin.Context) {
+	limit, err := strconv.Atoi(c.DefaultQuery("limit", "20"))
+	offset, err := strconv.Atoi(c.DefaultQuery("offset", "0"))
+	if err != nil {
+		c.JSON(200, serializer.ErrorResponse(serializer.CodeParamError))
+		return
+	}
+	res := v1.FindQuestions(limit, offset)
+	c.JSON(200, res)
+}
+
+// 获取热门问题列表
+func FindHotQuestions(c *gin.Context) {
+	limit, err := strconv.Atoi(c.DefaultQuery("limit", "20"))
+	offset, err := strconv.Atoi(c.DefaultQuery("offset", "0"))
+	if err != nil {
+		c.JSON(200, serializer.ErrorResponse(serializer.CodeParamError))
+		return
+	}
+	res := v1.FindHotQuestions(limit, offset)
 	c.JSON(200, res)
 }

@@ -17,25 +17,26 @@ func NewRouter() *gin.Engine {
 	r.GET("/", api.Index)
 
 	v1Group := r.Group("/api/v1")
-	v1Group.Use(auth.JwtWithAnonymous())
 	{
 		// 注册
 		v1Group.POST("/user/register", v1.UserRegister)
 		// 登录
 		v1Group.POST("/user/login", v1.UserLogin)
 
-		// 查看单个问题
-		v1Group.GET("/questions/:qid", v1.FindOneQuestion)
-
+		// 获取首页问题列表
+		v1Group.GET("/questions", v1.FindQuestions)
 		// 获取热门问题列表
 		v1Group.GET("/hot_questions", v1.FindHotQuestions)
 
-		// 获取首页问题列表
-		v1Group.GET("/questions", v1.FindQuestions)
-
-		// 查看单个回答
-		v1Group.GET("/questions/:qid/answers/:aid", v1.FindAnswer)
-		
+		// 可选token
+		jwtSelect := v1Group.Group("")
+		jwtSelect.Use(auth.JwtWithAnonymous())
+		{
+			// 查看单个问题
+			jwtSelect.GET("/questions/:qid", v1.FindOneQuestion)
+			// 查看单个回答
+			jwtSelect.GET("/questions/:qid/answers/:aid", v1.FindAnswer)
+		}
 
 		// 需要登录权限
 		jwt := v1Group.Group("")
