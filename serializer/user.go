@@ -16,14 +16,15 @@ type UserData struct {
 
 // BuildUserData 序列化单个用户
 func BuildUserData(user *model.User) *UserData {
+	profile, _ := model.GetUserProfile(user.ID)
 	return &UserData{
 		ID:          user.ID,
 		Username:    user.Username,
-		Nickname:    user.UserProfile.Nickname,
-		Email:       user.UserProfile.Email,
-		Status:      user.UserProfile.Status,
-		Avatar:      user.UserProfile.Avatar,
-		Description: user.UserProfile.Description,
+		Nickname:    profile.Nickname,
+		Email:       profile.Email,
+		Status:      profile.Status,
+		Avatar:      profile.Avatar,
+		Description: profile.Description,
 		CreatedAt:   user.CreatedAt.Unix(),
 	}
 }
