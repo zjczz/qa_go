@@ -35,6 +35,7 @@ const (
 const (
 	CodeAnswerIdError    errorCode = 4001
 	CodeQidMismatchError errorCode = 4002
+	CodeAnswerNotOwn     errorCode = 4003
 )
 
 // 错误码与描述信息map
@@ -57,6 +58,7 @@ var msgMap = map[errorCode]string{
 
 	CodeAnswerIdError:    "无效的回答id",
 	CodeQidMismatchError: "回答所属的问题id错误",
+	CodeAnswerNotOwn:     "用户无权处理该回答",
 }
 
 // 根据错误码得到对应说明

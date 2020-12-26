@@ -1,12 +1,13 @@
 package v1
 
 import (
-	"github.com/gin-gonic/gin"
 	"net/http"
 	"qa_go/api"
 	"qa_go/cache"
 	"qa_go/serializer"
 	v1 "qa_go/service/v1/user"
+
+	"github.com/gin-gonic/gin"
 )
 
 // UserRegister 用户注册

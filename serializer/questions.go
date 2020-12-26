@@ -2,25 +2,14 @@ package serializer
 
 import "qa_go/model"
 
-// 热门问题列表信息
-type HotQuestionsData struct {
-	Count     int            `json:"count"`
-	Questions []QuestionData `json:"questions"`
-}
-
-// 首页问题列表信息
-type QuestionsData struct {
-	Count     int             `json:"count"`
-	Questions []QuestionBrief `json:"questions"`
-}
-
+// 首页推荐列表单个问题
 type QuestionBrief struct {
 	ID     uint         `json:"id"`
 	Title  string       `json:"title"`
 	Answer *AnswerBrief `json:"answer"`
 }
 
-// 单个回答信息
+// 首页推荐列表单个回答
 type AnswerBrief struct {
 	ID          uint   `json:"id"`
 	Content     string `json:"content"`
@@ -29,27 +18,13 @@ type AnswerBrief struct {
 	Description string `json:"description"`
 }
 
-// 序列化热门问题列表
-func BuildHotQuestions(questions []model.Question) *HotQuestionsData {
-	questionsData := HotQuestionsData{}
-	questionsData.Count = len(questions)
-	questionsData.Questions = make([]QuestionData, len(questions))
-	for index, question := range questions {
-		profile, _ := model.GetUserProfile(question.UserID)
-		questionData := QuestionData{
-			ID:        question.ID,
-			Nickname:  profile.Nickname,
-			Title:     question.Title,
-			Content:   question.Content,
-			Avatar:    profile.Avatar,
-			CreatedAt: question.CreatedAt.Unix(),
-		}
-		questionsData.Questions[index] = questionData
-	}
-	return &questionsData
+// 首页推荐列表
+type QuestionsData struct {
+	Count     int             `json:"count"`
+	Questions []QuestionBrief `json:"questions"`
 }
 
-// 序列化首页问题列表
+// 序列化首页推荐列表
 func BuildQuestions(questions []model.Question) *QuestionsData {
 	questionsData := QuestionsData{}
 	questionsData.Count = len(questions)
@@ -76,26 +51,62 @@ func BuildQuestions(questions []model.Question) *QuestionsData {
 	return &questionsData
 }
 
+// 首页推荐列表响应信息
+type QuestionsResponse struct {
+	QuestionsData
+}
+
+// 序列化首页推荐列表响应
+func BuildQuestionsResponse(questions []model.Question) *QuestionsResponse {
+	return &QuestionsResponse{
+		*BuildQuestions(questions),
+	}
+}
+
+// 单个热点问题信息
+type HotQuestionData struct {
+	ID        uint   `json:"id"`
+	Title     string `json:"title"`
+	Content   string `json:"content"`
+	Nickname  string `json:"nickname"`
+	Avatar    string `json:"avatar"`
+	CreatedAt int64  `json:"created_at"`
+}
+
+// 热门问题列表信息
+type HotQuestionsData struct {
+	Count     int               `json:"count"`
+	Questions []HotQuestionData `json:"questions"`
+}
+
+// 序列化热门问题列表
+func BuildHotQuestions(questions []model.Question) *HotQuestionsData {
+	hotQuestionsData := HotQuestionsData{}
+	hotQuestionsData.Count = len(questions)
+	hotQuestionsData.Questions = make([]HotQuestionData, len(questions))
+	for index, question := range questions {
+		profile, _ := model.GetUserProfile(question.UserID)
+		hotQuestionData := HotQuestionData{
+			ID:        question.ID,
+			Nickname:  profile.Nickname,
+			Title:     question.Title,
+			Content:   question.Content,
+			Avatar:    profile.Avatar,
+			CreatedAt: question.CreatedAt.Unix(),
+		}
+		hotQuestionsData.Questions[index] = hotQuestionData
+	}
+	return &hotQuestionsData
+}
+
 // 热门问题列表响应信息
 type HotQuestionsResponse struct {
 	HotQuestionsData
-}
-
-// 首页问题列表响应信息
-type QuestionsResponse struct {
-	QuestionsData
 }
 
 // 序列化热门问题列表响应
 func BuildHotQuestionsResponse(questions []model.Question) *HotQuestionsResponse {
 	return &HotQuestionsResponse{
 		*BuildHotQuestions(questions),
-	}
-}
-
-// 序列化首页问题列表响应
-func BuildQuestionsResponse(questions []model.Question) *QuestionsResponse {
-	return &QuestionsResponse{
-		*BuildQuestions(questions),
 	}
 }

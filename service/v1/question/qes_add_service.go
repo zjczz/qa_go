@@ -20,5 +20,5 @@ func (qesAddService *QesAddService) QuestionAdd(user *model.User) *serializer.Re
 	if err := model.DB.Create(&qes).Error; err != nil {
 		return serializer.ErrorResponse(serializer.CodeDatabaseError)
 	}
-	return serializer.OkResponse(serializer.BuildQuestionResponse(&qes))
+	return serializer.OkResponse(serializer.BuildQuestionResponse(&qes, user.ID))
 }

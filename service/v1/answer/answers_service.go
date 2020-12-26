@@ -5,32 +5,24 @@ import (
 	"qa_go/serializer"
 )
 
-// AddAnswerService 管理回答问题的服务
-type AddAnswerService struct {
-	Content string `form:"content" json:"content" binding:"required"`
-}
+// 获取回答列表
+func FindAnswers(questionID uint, orderType int, limit int, offset int) *serializer.Response {
 
-// 回答问题
-func (service *AddAnswerService) AddAnswer(user *model.User, qid uint,uid uint) *serializer.Response {
-	answer := &model.Answer{
-		UserID:     user.ID,
-		QuestionID: qid,
-		Content:    service.Content,
+	var answers []model.Answer
+	var err error
+
+	switch orderType {
+	case 0:
+		answers, err = model.GetAnswersByScore(questionID, limit, offset)
+	case 1:
+		answers, err = model.GetAnswersByTime(questionID, limit, offset)
+	default:
+		answers, err = model.GetAnswersByScore(questionID, limit, offset)
 	}
 
-	if err := model.DB.Create(answer).Error; err != nil {
+	if err != nil {
 		return serializer.ErrorResponse(serializer.CodeDatabaseError)
 	}
-	return serializer.OkResponse(serializer.BuildAnswerResponse(answer,uid))
-}
 
-// 查看单个问题
-func FindOneAnswer(qid uint, aid uint,uid uint) *serializer.Response {
-	if answer, err := model.GetAnswer(aid); err == nil {
-		if answer.QuestionID != qid {
-			return serializer.ErrorResponse(serializer.CodeQidMismatchError)
-		}
-		return serializer.OkResponse(serializer.BuildAnswerResponse(answer,uid))
-	}
-	return serializer.ErrorResponse(serializer.CodeAnswerIdError)
+	return serializer.OkResponse(serializer.BuildAnswersResponse(answers))
 }

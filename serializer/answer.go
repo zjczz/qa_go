@@ -6,30 +6,28 @@ import "qa_go/model"
 type AnswerData struct {
 	ID          uint   `json:"id"`
 	QuestionID  uint   `json:"qid"`
+	UserID      uint   `json:"uid"`
 	Content     string `json:"content"`
 	Avatar      string `json:"avatar"`
 	Nickname    string `json:"nickname"`
 	Description string `json:"description"`
 	CreatedAt   int64  `json:"created_at"`
-	Own 		bool   `json:"own"`
+	Own         bool   `json:"own"`
 }
 
 // 序列化单个回答
-func BuildAnswer(ans *model.Answer,uid uint) *AnswerData {
-	profile, _ := model.GetUserProfile(ans.UserID)
-	// own:= false
-	// if ans.UserID==uid{
-	// 	own=true
-	// }
+func BuildAnswer(answer *model.Answer, uid uint) *AnswerData {
+	profile, _ := model.GetUserProfile(answer.UserID)
 	return &AnswerData{
-		ID:          ans.ID,
-		QuestionID:  ans.QuestionID,
-		Content:     ans.Content,
+		ID:          answer.ID,
+		QuestionID:  answer.QuestionID,
+		UserID:      answer.UserID,
+		Content:     answer.Content,
 		Avatar:      profile.Avatar,
 		Nickname:    profile.Nickname,
 		Description: profile.Description,
-		CreatedAt:   ans.CreatedAt.Unix(),
-		Own:		 uid==ans.UserID,
+		CreatedAt:   answer.CreatedAt.Unix(),
+		Own:         uid == answer.UserID,
 	}
 }
 
@@ -39,8 +37,8 @@ type AnswerResponse struct {
 }
 
 // 序列化单个问题响应
-func BuildAnswerResponse(answer *model.Answer,uid uint) *AnswerResponse {
+func BuildAnswerResponse(answer *model.Answer, uid uint) *AnswerResponse {
 	return &AnswerResponse{
-		Answer: BuildAnswer(answer,uid),
+		Answer: BuildAnswer(answer, uid),
 	}
 }
