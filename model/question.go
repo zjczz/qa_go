@@ -18,14 +18,20 @@ func GetQuestion(id uint) (*Question, error) {
 	return &question, result.Error
 }
 
-// GetHotQuestions 用获取热门问题列表，按创建时间降序排列(后续按分数排序)
-func GetHotQuestions(limit int, offset int) ([]Question, error) {
-	var questions []Question
-	result := DB.Order("created_at desc").Limit(limit).Offset(offset).Find(&questions)
-	return questions, result.Error
+// UpdateQuestion 根据ID修改问题
+func UpdateQuestion(id uint, columns map[string]interface{}) (*Question, error) {
+	var question Question
+	result := DB.Model(&question).Where("id = ?", id).Updates(columns).Find(&question)
+	return &question, result.Error
 }
 
-// GetQuestions 用获取首页问题列表，按创建时间降序排列，如果问题下有回答加载一个最新回答
+// DeleteQuestion 根据ID删除问题
+func DeleteQuestion(id uint) error {
+	result := DB.Delete(&Question{}, id).Error
+	return result
+}
+
+// GetQuestions 用获取首页推荐列表，按创建时间降序排列，如果问题下有回答加载一个最新回答
 func GetQuestions(limit int, offset int) ([]Question, error) {
 	var questions []Question
 	result := DB.Order("created_at desc").Limit(limit).Offset(offset).Find(&questions)
@@ -39,15 +45,9 @@ func GetQuestions(limit int, offset int) ([]Question, error) {
 	return questions, result.Error
 }
 
-// UpdateQuestion 根据ID修改问题
-func UpdateQuestion(id uint, columns map[string]interface{}) (*Question, error) {
-	var question Question
-	result := DB.Model(&question).Where("id = ?", id).Updates(columns).Find(&question)
-	return &question, result.Error
-}
-
-// DeleteQuestion 根据ID删除问题
-func DeleteQuestion(id uint) error {
-	result := DB.Delete(&Question{}, id).Error
-	return result
+// GetHotQuestions 用获取热门问题列表，按创建时间降序排列(后续按分数排序)
+func GetHotQuestions(limit int, offset int) ([]Question, error) {
+	var questions []Question
+	result := DB.Order("created_at desc").Limit(limit).Offset(offset).Find(&questions)
+	return questions, result.Error
 }

@@ -23,10 +23,12 @@ func NewRouter() *gin.Engine {
 		// 登录
 		v1Group.POST("/user/login", v1.UserLogin)
 
-		// 获取首页问题列表
+		// 获取首页推荐列表
 		v1Group.GET("/questions", v1.FindQuestions)
 		// 获取热门问题列表
 		v1Group.GET("/hot_questions", v1.FindHotQuestions)
+
+		v1Group.GET("/questions/:qid/answers", v1.FindAnswers)
 
 		// 可选token
 		jwtSelect := v1Group.Group("")
@@ -54,6 +56,10 @@ func NewRouter() *gin.Engine {
 
 			// 回答问题
 			jwt.POST("/questions/:qid/answers", v1.AddAnswer)
+			// 修改回答
+			jwt.PUT("/questions/:qid/answers/:aid", v1.UpdateAnswer)
+			// 删除回答
+			jwt.DELETE("/questions/:qid/answers/:aid", v1.DeleteAnswer)
 		}
 	}
 

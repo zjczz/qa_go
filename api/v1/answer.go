@@ -54,3 +54,49 @@ func FindAnswer(c *gin.Context) {
 	res := v1.FindOneAnswer(uint(qid), uint(aid), uid)
 	c.JSON(200, res)
 }
+
+// 修改回答
+func UpdateAnswer(c *gin.Context) {
+	qid, err1 := strconv.Atoi(c.Param("qid"))
+	aid, err2 := strconv.Atoi(c.Param("aid"))
+	if err1 != nil || err2 != nil {
+		c.JSON(200, serializer.ErrorResponse(serializer.CodeParamError))
+		return
+	}
+	var service v1.UpdateAnswerService
+	err := c.ShouldBind(&service)
+	if err != nil {
+		c.JSON(200, serializer.ErrorResponse(serializer.CodeParamError))
+		return
+	}
+	user := api.CurrentUser(c)
+	res := service.UpdateAnswer(user, uint(qid), uint(aid))
+	c.JSON(200, res)
+}
+
+// 删除回答
+func DeleteAnswer(c *gin.Context) {
+	qid, err1 := strconv.Atoi(c.Param("qid"))
+	aid, err2 := strconv.Atoi(c.Param("aid"))
+	if err1 != nil || err2 != nil {
+		c.JSON(200, serializer.ErrorResponse(serializer.CodeParamError))
+		return
+	}
+
+	user := api.CurrentUser(c)
+	res := v1.DeleteAnswer(user, uint(qid), uint(aid))
+	c.JSON(200, res)
+}
+
+func FindAnswers(c *gin.Context) {
+	qid, err1 := strconv.Atoi(c.Param("qid"))
+	orderType, err2 := strconv.Atoi(c.DefaultQuery("type", "0"))
+	limit, err3 := strconv.Atoi(c.DefaultQuery("limit", "20"))
+	offset, err4 := strconv.Atoi(c.DefaultQuery("offset", "0"))
+	if err1 != nil || err2 != nil || err3 != nil || err4 != nil {
+		c.JSON(200, serializer.ErrorResponse(serializer.CodeParamError))
+	}
+
+	res := v1.FindAnswers(uint(qid), orderType, limit, offset)
+	c.JSON(200, res)
+}
