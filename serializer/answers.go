@@ -15,8 +15,8 @@ type AnswersData struct {
 
 // 回答列表响应信息
 type AnswersResponse struct {
-	Count   int          `json:"count"`
-	Answers []AnswerData `json:"answers"`
+	Count   int           `json:"count"`
+	Answers []AnswersData `json:"answers"`
 }
 
 // 序列化回答列表响应
@@ -25,7 +25,7 @@ func BuildAnswersResponse(answers []model.Answer) *AnswersResponse {
 	answersResponse.Count = len(answers)
 	for _, answer := range answers {
 		userProfile, _ := model.GetUserProfile(answer.UserID)
-		answersResponse.Answers = append(answersResponse.Answers, AnswerData{
+		answersResponse.Answers = append(answersResponse.Answers, AnswersData{
 			ID:          answer.ID,
 			QuestionID:  answer.QuestionID,
 			Content:     answer.Content,
