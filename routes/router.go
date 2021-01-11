@@ -25,7 +25,7 @@ func NewRouter() *gin.Engine {
 
 		// 获取首页推荐列表
 		v1Group.GET("/questions", v1.FindQuestions)
-		// 获取热门问题列表
+		// 获取问题热榜
 		v1Group.GET("/hot_questions", v1.FindHotQuestions)
 
 		v1Group.GET("/questions/:qid/answers", v1.FindAnswers)

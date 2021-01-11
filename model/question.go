@@ -45,9 +45,9 @@ func GetQuestions(limit int, offset int) ([]Question, error) {
 	return questions, result.Error
 }
 
-// GetHotQuestions 用获取热门问题列表，按创建时间降序排列(后续按分数排序)
-func GetHotQuestions(limit int, offset int) ([]Question, error) {
+// GetHotQuestions 用于获取问题热榜，暂返回最近发表的50条问题
+func GetHotQuestions() ([]Question, error) {
 	var questions []Question
-	result := DB.Order("created_at desc").Limit(limit).Offset(offset).Find(&questions)
+	result := DB.Order("created_at desc").Limit(50).Find(&questions)
 	return questions, result.Error
 }

@@ -1,6 +1,9 @@
 package serializer
 
-import "qa_go/model"
+import (
+	"qa_go/model"
+	"sort"
+)
 
 // 首页推荐列表单个问题
 type QuestionBrief struct {
@@ -65,12 +68,9 @@ func BuildQuestionsResponse(questions []model.Question) *QuestionsResponse {
 
 // 单个热点问题信息
 type HotQuestionData struct {
-	ID        uint   `json:"id"`
-	Title     string `json:"title"`
-	Content   string `json:"content"`
-	Nickname  string `json:"nickname"`
-	Avatar    string `json:"avatar"`
-	CreatedAt int64  `json:"created_at"`
+	ID    uint   `json:"id"`
+	Title string `json:"title"`
+	Hot   int64  `json:"hot"`
 }
 
 // 热门问题列表信息
@@ -79,23 +79,36 @@ type HotQuestionsData struct {
 	Questions []HotQuestionData `json:"questions"`
 }
 
+// 自定义类型，便于实现自定义排序方法
+type HotQuestions []HotQuestionData
+
+// 实现排序接口方法
+func (q HotQuestions) Len() int {
+	return len(q)
+}
+func (q HotQuestions) Swap(i, j int) {
+	q[i], q[j] = q[j], q[i]
+}
+func (q HotQuestions) Less(i, j int) bool {
+	return q[i].Hot > q[j].Hot
+}
+
 // 序列化热门问题列表
 func BuildHotQuestions(questions []model.Question) *HotQuestionsData {
 	hotQuestionsData := HotQuestionsData{}
 	hotQuestionsData.Count = len(questions)
-	hotQuestionsData.Questions = make([]HotQuestionData, len(questions))
+	var hots HotQuestions = make([]HotQuestionData, len(questions))
 	for index, question := range questions {
-		profile, _ := model.GetUserProfile(question.UserID)
 		hotQuestionData := HotQuestionData{
-			ID:        question.ID,
-			Nickname:  profile.Nickname,
-			Title:     question.Title,
-			Content:   question.Content,
-			Avatar:    profile.Avatar,
-			CreatedAt: question.CreatedAt.Unix(),
+			ID:    question.ID,
+			Title: question.Title,
+			Hot:   model.GetAnswerCount(question.ID),
 		}
-		hotQuestionsData.Questions[index] = hotQuestionData
+		hots[index] = hotQuestionData
 	}
+	// 按热度值排序
+	sort.Sort(hots)
+	hotQuestionsData.Questions = hots
 	return &hotQuestionsData
 }
 
