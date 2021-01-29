@@ -9,7 +9,8 @@ import (
 func StartSchedule() {
 	c := cron.New()
 
-	addCronFunc(c, "@every 1m", func() {
+	// 每30分钟将redis数据同步到mysql
+	addCronFunc(c, "@every 30m", func() {
 		model.SyncUserLikeRecord()
 		model.SyncAnswerLikeCount()
 	})
