@@ -51,3 +51,10 @@ func GetHotQuestions() ([]Question, error) {
 	result := DB.Order("created_at desc").Limit(50).Find(&questions)
 	return questions, result.Error
 }
+
+// 获取指定用户ID发布的问题（时间倒序）
+func GetUserQuestions(userID uint) ([]Question, error) {
+	var questions []Question
+	result := DB.Where("user_id=?", userID).Order("created_at desc").Find(&questions)
+	return questions, result.Error
+}

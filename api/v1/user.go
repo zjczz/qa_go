@@ -7,6 +7,8 @@ import (
 	"qa_go/serializer"
 	v1 "qa_go/service/v1/user"
 
+	"qa_go/model"
+
 	"github.com/gin-gonic/gin"
 )
 
@@ -36,6 +38,30 @@ func UserLogin(c *gin.Context) {
 func UserMe(c *gin.Context) {
 	user := api.CurrentUser(c)
 	c.JSON(http.StatusOK, serializer.OkResponse(serializer.BuildUserResponse(user)))
+}
+
+// 查看用户发布的问题
+func GetUserQuestions(c *gin.Context) {
+	user := api.CurrentUser(c)
+	questions, err := model.GetUserQuestions(user.ID)
+	if err != nil {
+		c.JSON(200, serializer.ErrorResponse(serializer.CodeDatabaseError))
+	} else {
+		res := serializer.BuildUserQuestionsResponse(questions)
+		c.JSON(200, serializer.OkResponse(res))
+	}
+}
+
+// 查看用户发布的回答
+func GetUserAnswers(c *gin.Context) {
+	user := api.CurrentUser(c)
+	answers, err := model.GetUserAnswers(user.ID)
+	if err != nil {
+		c.JSON(200, serializer.ErrorResponse(serializer.CodeDatabaseError))
+	} else {
+		res := serializer.BuildUserAnswersResponse(answers)
+		c.JSON(200, serializer.OkResponse(res))
+	}
 }
 
 // ChangePassword 修改密码

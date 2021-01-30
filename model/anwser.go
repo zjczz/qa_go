@@ -43,3 +43,10 @@ func GetAnswersByScore(questionID uint, limit int, offset int) ([]Answer, error)
 	result := DB.Where("question_id = ?", questionID).Order("created_at").Limit(limit).Offset(offset).Find(&answers)
 	return answers, result.Error
 }
+
+// 获取指定用户ID发布的回答（时间倒序）
+func GetUserAnswers(userID uint) ([]Answer, error) {
+	var answers []Answer
+	result := DB.Where("user_id=?", userID).Order("created_at desc").Find(&answers)
+	return answers, result.Error
+}

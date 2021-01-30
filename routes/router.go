@@ -27,7 +27,7 @@ func NewRouter() *gin.Engine {
 		v1Group.GET("/questions", v1.FindQuestions)
 		// 获取问题热榜
 		v1Group.GET("/hot_questions", v1.FindHotQuestions)
-
+		// 获取回答列表
 		v1Group.GET("/questions/:qid/answers", v1.FindAnswers)
 
 		// 可选token
@@ -46,6 +46,10 @@ func NewRouter() *gin.Engine {
 		{
 			// 查看个人信息
 			jwt.GET("/user/me", v1.UserMe)
+			// 查看个人发布问题
+			jwt.GET("/user/questions", v1.GetUserQuestions)
+			// 查看个人发布回答
+			jwt.GET("/user/answers", v1.GetUserAnswers)
 
 			// 发布问题
 			jwt.POST("/questions", v1.QuestionAdd)
