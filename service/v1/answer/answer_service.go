@@ -29,6 +29,11 @@ func (service *AddAnswerService) AddAnswer(user *model.User, qid uint) *serializ
 	return serializer.OkResponse(serializer.BuildAnswerResponse(answer, user.ID))
 }
 
+// VoterService 点赞状态
+type VoterService struct {
+	Type string `form:"type" json:"type" binding:"required"`
+}
+
 // 查看单个回答
 func FindOneAnswer(qid uint, aid uint, uid uint) *serializer.Response {
 	if answer, err := model.GetAnswer(aid); err == nil {
@@ -88,4 +93,29 @@ func DeleteAnswer(user *model.User, qid uint, aid uint) *serializer.Response {
 	} else {
 		return serializer.OkResponse(nil)
 	}
+}
+
+//Voter 点赞
+func Voter(uid uint, aid uint, status string) *serializer.Response {
+	code := 0
+	if status == "up" {
+		code = 1
+	} else if status == "down" {
+		code = 2
+	}
+	err := model.AddUserLike(uid, aid, uint(code))
+	if err != nil {
+		return serializer.ErrorResponse(serializer.CodeVoterTypeError)
+	}
+	return serializer.OkResponse(nil)
+}
+
+//获取赞的内容
+func GetAwesomes(uid uint) *serializer.Response {
+	ids, err := model.GetUserLikes(uid)
+	if err != nil {
+		return serializer.ErrorResponse(serializer.CodeAnswerIdError)
+	}
+	ans, _ := model.GetAnswers(ids)
+	return serializer.OkResponse(serializer.BuildAwsResponse(ans, uid))
 }

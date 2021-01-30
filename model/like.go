@@ -31,7 +31,7 @@ const (
 	UserLikeAnswers = "user_like_answers"
 )
 
-// GetUserLike 获取用户uid对回答aid的点赞情况
+// GetUserLike 获取用户uid的点赞列表
 func GetUserLikes(uid uint) ([]uint, error) {
 	var likes []UserLike
 	err := DB.Where("user_id = ? and status = 1", uid).
@@ -207,3 +207,4 @@ func SyncAnswerLikeCount() {
 	// 删除redis中的数据
 	cache.RedisClient.Del(AnswerLikeCount)
 }
+

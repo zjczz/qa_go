@@ -6,7 +6,7 @@ import (
 )
 
 // 获取回答列表
-func FindAnswers(questionID uint, orderType int, limit int, offset int) *serializer.Response {
+func FindAnswers(questionID uint, orderType int, limit int, offset int,uid uint) *serializer.Response {
 
 	var answers []model.Answer
 	var err error
@@ -23,6 +23,6 @@ func FindAnswers(questionID uint, orderType int, limit int, offset int) *seriali
 	if err != nil {
 		return serializer.ErrorResponse(serializer.CodeDatabaseError)
 	}
-
-	return serializer.OkResponse(serializer.BuildAnswersResponse(answers))
+	
+	return serializer.OkResponse(serializer.BuildAwsResponse(answers,uid))
 }

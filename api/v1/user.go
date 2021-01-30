@@ -6,8 +6,9 @@ import (
 	"qa_go/cache"
 	"qa_go/serializer"
 	v1 "qa_go/service/v1/user"
-
+	
 	"github.com/gin-gonic/gin"
+	//"github.com/go-delve/delve/service"
 )
 
 // UserRegister 用户注册
@@ -60,3 +61,4 @@ func Logout(c *gin.Context) {
 		Msg: "已退出登录",
 	})
 }
+

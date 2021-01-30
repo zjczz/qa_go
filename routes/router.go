@@ -60,6 +60,10 @@ func NewRouter() *gin.Engine {
 			jwt.PUT("/questions/:qid/answers/:aid", v1.UpdateAnswer)
 			// 删除回答
 			jwt.DELETE("/questions/:qid/answers/:aid", v1.DeleteAnswer)
+			//点赞
+			jwt.POST("/answers/:aid/voters",v1.Voter)
+			//获取赞的回答
+			jwt.GET("/user/awesomes",v1.Awesomes)
 		}
 	}
 
