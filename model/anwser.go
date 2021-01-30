@@ -17,15 +17,17 @@ func GetAnswer(id uint) (*Answer, error) {
 	result := DB.First(&answer, id)
 	return &answer, result.Error
 }
+
 //GetAnswers 用ID获取回答列表
-func GetAnswers(ids []uint)([]Answer,error){
+func GetAnswers(ids []uint) ([]Answer, error) {
 	var ans []Answer
-	for _,id:= range ids{
-		a,_:=GetAnswer(id)
-		ans=append(ans, *a)
+	for _, id := range ids {
+		a, _ := GetAnswer(id)
+		ans = append(ans, *a)
 	}
-	return ans,nil
+	return ans, nil
 }
+
 //根据questionID获取回答总数
 func GetAnswerCount(id uint) int64 {
 	var cnt int64
@@ -52,17 +54,26 @@ func GetAnswersByScore(questionID uint, limit int, offset int) ([]Answer, error)
 	result := DB.Where("question_id = ?", questionID).Order("created_at").Limit(limit).Offset(offset).Find(&answers)
 	return answers, result.Error
 }
+
 //获取某回答的点赞总数
-func  GetAnswerlikedCount(aid uint)(uint,error){
-	cnt,err:=GetLikeCountInCache(aid)
-	if err!=nil{
-		return 0,err
+func GetAnswerlikedCount(aid uint) (uint, error) {
+	cnt, err := GetLikeCountInCache(aid)
+	if err != nil {
+		return 0, err
 	}
-	ans,err:=GetAnswer(aid)
-	cnt+=ans.LikeCount
-	return cnt,err
+	ans, err := GetAnswer(aid)
+	cnt += ans.LikeCount
+	return cnt, err
 }
+
 //获取某用户对某问题的点赞状态
-func GetUserLikeStatus(uid uint,aid uint)(uint,error){
-	return GetUserLike(uid,aid)
+func GetUserLikeStatus(uid uint, aid uint) (uint, error) {
+	return GetUserLike(uid, aid)
+}
+
+// 获取指定用户ID发布的回答（时间倒序）
+func GetUserAnswers(userID uint) ([]Answer, error) {
+	var answers []Answer
+	result := DB.Where("user_id=?", userID).Order("created_at desc").Find(&answers)
+	return answers, result.Error
 }

@@ -13,7 +13,7 @@ import (
 
 const (
 	// jwt过期时间
-	JwtExpireTime = time.Hour * 24
+	JwtExpireTime = time.Hour * 720
 )
 
 var (
