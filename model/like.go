@@ -88,7 +88,7 @@ func GetUserLike(uid uint, aid uint) (uint, error) {
 	return userLike.Status, result.Error
 }
 
-// AddUserLike status=0：取消点赞，status=1：点赞，status=2：点踩
+// AddUserLike修改用户对某回答的点赞状态  status=0：取消点赞，status=1：点赞，status=2：点踩
 func AddUserLike(uid uint, aid uint, status uint) error {
 	// 获取之前的点赞状态
 	pre, err := GetUserLike(uid, aid)
@@ -114,13 +114,13 @@ func AddUserLike(uid uint, aid uint, status uint) error {
 	return err
 }
 
-// GetLikeCountIdInCache 根据AnswerID获取缓存中的点赞数
+// GetLikeCountIdInCache 根据AnswerID获取缓存中的点赞修改总数
 func GetLikeCountInCache(aid uint) (uint, error) {
 	res, err := cache.RedisClient.HGet(AnswerLikeCount, strconv.Itoa(int(aid))).Int()
 	return uint(res), err
 }
 
-// SyncUserLikeRecord 将redis中的用户点赞记录同步到数据库
+// SyncUserLikeRecord 将redis中的用户点赞记录同步到数据库，对应like表
 func SyncUserLikeRecord() {
 	fmt.Println("Start SyncUserLikeRecord...")
 	defer fmt.Println("End SyncUserLikeRecord...")
@@ -172,7 +172,7 @@ func SyncUserLikeRecord() {
 	}
 }
 
-// SyncUserLikeRecord 将redis中的回答点赞数量同步到数据库
+// SyncUserLikeRecord 将redis中的回答点赞数量同步到数据库，对应answer表
 func SyncAnswerLikeCount() {
 	fmt.Println("Start SyncLikeCount...")
 	defer fmt.Println("End SyncLikeCount...")
