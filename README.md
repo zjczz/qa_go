@@ -9,15 +9,15 @@
 - [x] 查看问题
 - [x] 修改问题
 - [x] 删除问题
-- [x] 首页推荐列表
+- [x] 首页推荐列表（推荐算法未完善）
+- [x] 问题热榜（热榜算法未完善）
 - [x] 回答问题
 - [x] 查看回答
 - [x] 修改回答
 - [x] 删除回答
 - [x] 回答列表
-- [ ] 热门问题列表
-- [ ] 回答点赞点踩
-- [ ] 查看自己发布问题，回答问题，评论记录
+- [x] 回答点赞点踩
+- [x] 查看自己发布的问题、回答以及点赞记录
 
 ## 环境依赖
 
@@ -27,6 +27,7 @@
 - [godotenv](https://github.com/joho/godotenv): 开发环境下的环境变量工具，方便配置环境变量
 - [Jwt-Go](https://github.com/dgrijalva/jwt-go): Golang JWT组件，本项目使用基于 jwt 实现的 token 来做身份验证
 - [crypto](https://pkg.go.dev/golang.org/x/crypto): Golang 加密算法库，本项目使用其中的 bcrypto 算法来加密用户密码
+- [cron](https://github.com/robfig/cron): Golang 定时任务库，用于 Redis 缓存同步
 
 ## 目录结构
 
@@ -40,7 +41,6 @@
 ├── routes           路由配置
 ├── serializer       将实体映射成不同的viewmodel，以及常用的响应信息
 ├── service          将比较复杂的业务从API层分离出来
-├── utils            常用工具
 | main.go            项目入口
 ```
 

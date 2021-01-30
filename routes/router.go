@@ -50,6 +50,8 @@ func NewRouter() *gin.Engine {
 			jwt.GET("/user/questions", v1.GetUserQuestions)
 			// 查看个人发布回答
 			jwt.GET("/user/answers", v1.GetUserAnswers)
+			// 查看点赞回答列表
+			jwt.GET("/user/awesomes", v1.Awesomes)
 
 			// 发布问题
 			jwt.POST("/questions", v1.QuestionAdd)
@@ -64,10 +66,8 @@ func NewRouter() *gin.Engine {
 			jwt.PUT("/questions/:qid/answers/:aid", v1.UpdateAnswer)
 			// 删除回答
 			jwt.DELETE("/questions/:qid/answers/:aid", v1.DeleteAnswer)
-			//点赞
-			jwt.POST("/answers/:aid/voters",v1.Voter)
-			//获取赞的回答
-			jwt.GET("/user/awesomes",v1.Awesomes)
+			// 点赞回答
+			jwt.POST("/answers/:aid/voters", v1.Voter)
 		}
 	}
 
