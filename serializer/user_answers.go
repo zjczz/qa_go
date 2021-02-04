@@ -8,6 +8,7 @@ type UserAnswersData struct {
 	QuestionID uint   `json:"qid"`
 	Title      string `json:"title"`
 	Content    string `json:"content"`
+	LikeCount  uint   `json:"like_count"`
 	CreatedAt  int64  `json:"created_at"`
 }
 
@@ -26,11 +27,13 @@ func BuildUserAnswersResponse(answers []model.Answer) *UserAnswersResponse {
 		if err != nil {
 			continue
 		}
+		likes, _ := model.GetAnswerlikedCount(answer.ID)
 		userAnswersResponse.Answers = append(userAnswersResponse.Answers, UserAnswersData{
 			ID:         answer.ID,
 			QuestionID: answer.QuestionID,
 			Title:      question.Title,
 			Content:    answer.Content,
+			LikeCount:  likes,
 			CreatedAt:  answer.CreatedAt.Unix(),
 		})
 	}
