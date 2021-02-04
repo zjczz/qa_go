@@ -1,7 +1,6 @@
 package v1
 
 import (
-	
 	"qa_go/api"
 	"qa_go/serializer"
 	v1 "qa_go/service/v1/answer"
@@ -97,20 +96,14 @@ func FindAnswers(c *gin.Context) {
 	if err1 != nil || err2 != nil || err3 != nil || err4 != nil {
 		c.JSON(200, serializer.ErrorResponse(serializer.CodeParamError))
 	}
-	user := api.CurrentUser(c)
-	var uid uint
-	if user==nil{
-		uid=0
-	}else{
-		uid=user.ID
-	}
-	res := v1.FindAnswers(uint(qid), orderType, limit, offset,uid)
+	res := v1.FindAnswers(uint(qid), orderType, limit, offset)
 	c.JSON(200, res)
 }
+
 //点赞
 func Voter(c *gin.Context) {
 	aid, err := strconv.Atoi(c.Param("aid"))
-	if err != nil  {
+	if err != nil {
 		c.JSON(200, serializer.ErrorResponse(serializer.CodeParamError))
 	}
 	// 解析参数
@@ -121,12 +114,13 @@ func Voter(c *gin.Context) {
 		return
 	}
 	user := api.CurrentUser(c)
-	res := v1.Voter(user.ID,uint(aid),status.Type)
+	res := v1.Voter(user.ID, uint(aid), status.Type)
 	c.JSON(200, res)
 }
+
 //获取用户赞过的回答
-func Awesomes(c *gin.Context){
+func Awesomes(c *gin.Context) {
 	user := api.CurrentUser(c)
-	res:=v1.GetAwesomes(user.ID)
+	res := v1.GetAwesomes(user.ID)
 	c.JSON(200, res)
 }

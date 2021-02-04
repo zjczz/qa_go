@@ -19,6 +19,7 @@ type AnswerBrief struct {
 	Avatar      string `json:"avatar"`
 	Nickname    string `json:"nickname"`
 	Description string `json:"description"`
+	LikeCount   uint   `json:"like_count"`
 }
 
 // 首页推荐列表
@@ -41,12 +42,14 @@ func BuildQuestions(questions []model.Question) *QuestionsData {
 		}
 		if len(question.Answers) != 0 {
 			profile, _ := model.GetUserProfile(question.Answers[0].UserID)
+			likes, _ := model.GetAnswerlikedCount(question.Answers[0].ID)
 			answer := AnswerBrief{}
 			answer.ID = question.Answers[0].ID
 			answer.Content = question.Answers[0].Content
 			answer.Avatar = profile.Avatar
 			answer.Nickname = profile.Nickname
 			answer.Description = profile.Description
+			answer.LikeCount = likes
 			questionData.Answer = &answer
 		}
 		questionsData.Questions[index] = questionData
@@ -70,7 +73,7 @@ func BuildQuestionsResponse(questions []model.Question) *QuestionsResponse {
 type HotQuestionData struct {
 	ID    uint   `json:"id"`
 	Title string `json:"title"`
-	Hot   int64  `json:"hot"`
+	Hot   uint   `json:"hot"`
 }
 
 // 热门问题列表信息
@@ -102,7 +105,7 @@ func BuildHotQuestions(questions []model.Question) *HotQuestionsData {
 		hotQuestionData := HotQuestionData{
 			ID:    question.ID,
 			Title: question.Title,
-			Hot:   model.GetAnswerCount(question.ID),
+			Hot:   question.AnswerCount,
 		}
 		hots[index] = hotQuestionData
 	}

@@ -10,12 +10,11 @@ type QuestionData struct {
 	Content     string `json:"content"`
 	CreatedAt   int64  `json:"created_at"`
 	Own         bool   `json:"own"`
-	AnswerCount int64  `json:"answer_count"`
+	AnswerCount uint   `json:"answer_count"`
 }
 
 // 序列化单个问题
 func BuildQuestion(question *model.Question, uid uint) *QuestionData {
-	count := model.GetAnswerCount(question.ID)
 	return &QuestionData{
 		ID:          question.ID,
 		UID:         question.UserID,
@@ -23,7 +22,7 @@ func BuildQuestion(question *model.Question, uid uint) *QuestionData {
 		Content:     question.Content,
 		CreatedAt:   question.CreatedAt.Unix(),
 		Own:         uid == question.UserID,
-		AnswerCount: count,
+		AnswerCount: question.AnswerCount,
 	}
 }
 

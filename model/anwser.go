@@ -28,13 +28,6 @@ func GetAnswers(ids []uint) ([]Answer, error) {
 	return ans, nil
 }
 
-//根据questionID获取回答总数
-func GetAnswerCount(id uint) int64 {
-	var cnt int64
-	DB.Model(&Answer{}).Where("question_id = ?", id).Count(&cnt)
-	return cnt
-}
-
 // 删除回答
 func DeleteAnswer(id uint) error {
 	result := DB.Delete(&Answer{}, id).Error

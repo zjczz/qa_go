@@ -2,43 +2,49 @@ package serializer
 
 import "qa_go/model"
 
-//AnswersData 回答列表每一项数据
-type AnswersData struct {
+// 点赞列表的每一项数据
+type AwesomesData struct {
 	ID          uint   `json:"id"`
 	QuestionID  uint   `json:"qid"`
+	Title       string `json:"title"`
 	Content     string `json:"content"`
 	Avatar      string `json:"avatar"`
 	Nickname    string `json:"nickname"`
 	Description string `json:"description"`
 	CreatedAt   int64  `json:"created_at"`
 	LikeCount   uint   `json:"like_count"`
+	LikeStatus  uint   `json:"like_status"`
 }
 
-//AnswersResponse 回答列表响应信息
-type AnswersResponse struct {
-	Count   int           `json:"count"`
-	Answers []AnswersData `json:"answers"`
+// 点赞列表响应信息
+type AwesomesResponse struct {
+	Count   int            `json:"count"`
+	Answers []AwesomesData `json:"answers"`
 }
 
-//BuildAnswersResponse 序列化回答列表响应
-func BuildAnswersResponse(answers []model.Answer) *AnswersResponse {
-	var answersResponse AnswersResponse
-	answersResponse.Count = len(answers)
+// 序列化点赞列表响应
+func BuildAwesomesResponse(answers []model.Answer, uid uint) *AwesomesResponse {
+	var awesomesResponse AwesomesResponse
+	awesomesResponse.Count = len(answers)
 
 	for _, answer := range answers {
 		userProfile, _ := model.GetUserProfile(answer.UserID)
 		likes, _ := model.GetAnswerlikedCount(answer.ID)
+		status, _ := model.GetUserLikeStatus(uid, answer.ID)
+		question, _ := model.GetQuestion(answer.QuestionID)
 
-		answersResponse.Answers = append(answersResponse.Answers, AnswersData{
+		awesomesResponse.Answers = append(awesomesResponse.Answers, AwesomesData{
 			ID:          answer.ID,
 			QuestionID:  answer.QuestionID,
+			Title:       question.Title,
 			Content:     answer.Content,
 			Avatar:      userProfile.Avatar,
 			Nickname:    userProfile.Nickname,
 			Description: userProfile.Description,
 			CreatedAt:   answer.CreatedAt.Unix(),
 			LikeCount:   likes,
+			LikeStatus:  status,
 		})
 	}
-	return &answersResponse
+	return &awesomesResponse
 }
