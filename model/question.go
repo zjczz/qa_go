@@ -1,6 +1,15 @@
 package model
 
-import "gorm.io/gorm"
+import (
+	"strconv"
+
+	"qa_go/cache"
+
+	"time"
+
+	"github.com/go-redis/redis"
+	"gorm.io/gorm"
+)
 
 // Question 问题模型
 type Question struct {
@@ -46,16 +55,31 @@ func GetQuestions(limit int, offset int) ([]Question, error) {
 	return questions, result.Error
 }
 
-// GetHotQuestions 用于获取问题热榜，暂返回最近发表的50条问题
-func GetHotQuestions() ([]Question, error) {
-	var questions []Question
-	result := DB.Order("created_at desc").Limit(50).Find(&questions)
-	return questions, result.Error
-}
+//// 旧的热榜
+//// GetHotQuestions 用于获取问题热榜，暂返回最近发表的50条问题
+//func GetHotQuestions() ([]Question, error) {
+//	var questions []Question
+//	result := DB.Order("created_at desc").Limit(50).Find(&questions)
+//	return questions, result.Error
+//}
 
 // 获取指定用户ID发布的问题（时间倒序）
 func GetUserQuestions(userID uint) ([]Question, error) {
 	var questions []Question
 	result := DB.Where("user_id=?", userID).Order("created_at desc").Find(&questions)
 	return questions, result.Error
+}
+
+// 取近30天的问题信息，计算热度并存入redis
+func SyncHotQuestions() {
+	daysAgo := uint(time.Now().Unix()) - 60*60*24*30
+	var questions []Question
+	DB.Select("id", "created_at", "title", "answer_count").Where("DATE_SUB(CURDATE(), INTERVAL 30 DAY) <= date(created_at)").Find(&questions)
+	pipe := cache.RedisClient.TxPipeline()
+	pipe.ZRemRangeByRank(cache.KeyHotQuestions, 0, -1)
+	for _, question := range questions {
+		hot := (uint(question.CreatedAt.Unix())-daysAgo)/3600 + question.AnswerCount*2
+		pipe.ZAdd(cache.KeyHotQuestions, redis.Z{Score: float64(hot), Member: strconv.Itoa(int(question.ID)) + ":" + question.Title})
+	}
+	pipe.Exec()
 }

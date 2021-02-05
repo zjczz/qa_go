@@ -3,7 +3,12 @@ package cache
 import (
 	"os"
 	"strconv"
+
 	"github.com/go-redis/redis"
+)
+
+const (
+	KeyHotQuestions = "hot_questions"
 )
 
 // RedisClient Redis缓存客户端单例

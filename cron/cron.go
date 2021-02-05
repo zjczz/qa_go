@@ -2,8 +2,9 @@ package cron
 
 import (
 	"fmt"
-	"github.com/robfig/cron"
 	"qa_go/model"
+
+	"github.com/robfig/cron"
 )
 
 func StartSchedule() {
@@ -13,6 +14,11 @@ func StartSchedule() {
 	addCronFunc(c, "@every 30m", func() {
 		model.SyncUserLikeRecord()
 		model.SyncAnswerLikeCount()
+	})
+
+	// 每10分钟同步热榜信息
+	addCronFunc(c, "@every 10m", func() {
+		model.SyncHotQuestions()
 	})
 
 	c.Start()
