@@ -180,6 +180,7 @@ func SyncAnswerLikeCount() {
 	// 从redis中获得数据
 	data := cache.RedisClient.HGetAll(AnswerLikeCount).Val()
 
+	tx := DB.Begin()
 	for key, val := range data {
 		//fmt.Printf("%s\t%s\n", key, val)
 
@@ -200,11 +201,12 @@ func SyncAnswerLikeCount() {
 
 		err := DB.Model(&answer).UpdateColumn("like_count", expr).Error
 		if err != nil {
+			tx.Rollback()
 			panic(err)
 		}
 	}
 
+	tx.Commit()
 	// 删除redis中的数据
 	cache.RedisClient.Del(AnswerLikeCount)
 }
-
