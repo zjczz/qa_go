@@ -29,7 +29,7 @@ func BuildAwesomesResponse(answers []model.Answer, uid uint) *AwesomesResponse {
 
 	for _, answer := range answers {
 		userProfile, _ := model.GetUserProfile(answer.UserID)
-		likes, _ := model.GetAnswerlikedCount(answer.ID)
+		likes, _ := model.GetAnswerLikedCount(answer.ID)
 		status, _ := model.GetUserLikeStatus(uid, answer.ID)
 		question, _ := model.GetQuestion(answer.QuestionID)
 

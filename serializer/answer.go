@@ -20,7 +20,7 @@ type AnswerData struct {
 // BuildAnswer 序列化单个回答
 func BuildAnswer(answer *model.Answer, uid uint) *AnswerData {
 	profile, _ := model.GetUserProfile(answer.UserID)
-	likes, _ := model.GetAnswerlikedCount(answer.ID)
+	likes, _ := model.GetAnswerLikedCount(answer.ID)
 	status, _ := model.GetUserLikeStatus(uid, answer.ID)
 
 	return &AnswerData{

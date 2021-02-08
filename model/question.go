@@ -41,28 +41,6 @@ func DeleteQuestion(id uint) error {
 	return result
 }
 
-// GetQuestions 用获取首页推荐列表，按创建时间降序排列，如果问题下有回答加载一个最新回答
-func GetQuestions(limit int, offset int) ([]Question, error) {
-	var questions []Question
-	result := DB.Order("created_at desc").Limit(limit).Offset(offset).Find(&questions)
-	for i := 0; i < len(questions); i++ {
-		var answer Answer
-		DB.Where("question_id = ?", questions[i].ID).Limit(1).Find(&answer)
-		if answer.ID != 0 {
-			questions[i].Answers = append(questions[i].Answers, answer)
-		}
-	}
-	return questions, result.Error
-}
-
-//// 旧的热榜
-//// GetHotQuestions 用于获取问题热榜，暂返回最近发表的50条问题
-//func GetHotQuestions() ([]Question, error) {
-//	var questions []Question
-//	result := DB.Order("created_at desc").Limit(50).Find(&questions)
-//	return questions, result.Error
-//}
-
 // 获取指定用户ID发布的问题（时间倒序）
 func GetUserQuestions(userID uint) ([]Question, error) {
 	var questions []Question

@@ -33,23 +33,22 @@ func BuildQuestions(questions []model.Question) *QuestionsData {
 	questionsData.Count = len(questions)
 	questionsData.Questions = make([]QuestionBrief, len(questions))
 	for index, question := range questions {
-
 		questionData := QuestionBrief{
 			ID:     question.ID,
 			Title:  question.Title,
 			Answer: nil,
 		}
-		if len(question.Answers) != 0 {
-			profile, _ := model.GetUserProfile(question.Answers[0].UserID)
-			likes, _ := model.GetAnswerlikedCount(question.Answers[0].ID)
-			answer := AnswerBrief{}
-			answer.ID = question.Answers[0].ID
-			answer.Content = question.Answers[0].Content
-			answer.Avatar = profile.Avatar
-			answer.Nickname = profile.Nickname
-			answer.Description = profile.Description
-			answer.LikeCount = likes
-			questionData.Answer = &answer
+		if answer := model.GetHotAnswer(question.ID); answer != nil {
+			profile, _ := model.GetUserProfile(answer.UserID)
+			likes, _ := model.GetAnswerLikedCount(answer.ID)
+			answerBrief := AnswerBrief{}
+			answerBrief.ID = answer.ID
+			answerBrief.Content = answer.Content
+			answerBrief.Avatar = profile.Avatar
+			answerBrief.Nickname = profile.Nickname
+			answerBrief.Description = profile.Description
+			answerBrief.LikeCount = likes
+			questionData.Answer = &answerBrief
 		}
 		questionsData.Questions[index] = questionData
 	}

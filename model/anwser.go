@@ -1,6 +1,8 @@
 package model
 
-import "gorm.io/gorm"
+import (
+	"gorm.io/gorm"
+)
 
 // Answer 回答模型
 type Answer struct {
@@ -41,15 +43,15 @@ func GetAnswersByTime(questionID uint, limit int, offset int) ([]Answer, error) 
 	return answers, result.Error
 }
 
-// 获取回答列表，按热度排序，暂按时间升序
+// 获取回答列表，按热度（暂时只有点赞数）排序
 func GetAnswersByScore(questionID uint, limit int, offset int) ([]Answer, error) {
 	var answers []Answer
-	result := DB.Where("question_id = ?", questionID).Order("created_at").Limit(limit).Offset(offset).Find(&answers)
+	result := DB.Where("question_id = ?", questionID).Order("like_count desc").Limit(limit).Offset(offset).Find(&answers)
 	return answers, result.Error
 }
 
 //获取某回答的点赞总数
-func GetAnswerlikedCount(aid uint) (uint, error) {
+func GetAnswerLikedCount(aid uint) (uint, error) {
 	cnt, err := GetLikeCountInCache(aid)
 	if err != nil {
 		return 0, err
@@ -69,4 +71,14 @@ func GetUserAnswers(userID uint) ([]Answer, error) {
 	var answers []Answer
 	result := DB.Where("user_id=?", userID).Order("created_at desc").Find(&answers)
 	return answers, result.Error
+}
+
+// 获取指定问题在当前数据库中的最高赞回答
+func GetHotAnswer(questionID uint) *Answer {
+	var answer Answer
+	result := DB.Where("question_id = ?", questionID).Order("like_count desc").Limit(1).Find(&answer)
+	if result.RowsAffected > 0 {
+		return &answer
+	}
+	return nil
 }

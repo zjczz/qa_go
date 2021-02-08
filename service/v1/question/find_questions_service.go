@@ -6,14 +6,29 @@ import (
 	"qa_go/serializer"
 	"strconv"
 	"strings"
+
+	"gorm.io/gorm"
 )
 
-// 获取首页问题列表，并加载其回答
+// 获取首页问题列表，并加载其高赞回答
 func FindQuestions(limit int, offset int) *serializer.Response {
-	if questions, err := model.GetQuestions(limit, offset); err == nil {
-		return serializer.OkResponse(serializer.BuildQuestionsResponse(questions))
+	var questionsCache []string
+	if err := cache.RedisClient.ZRevRange(cache.KeyHotQuestions, int64(offset), int64(offset+limit-1)).ScanSlice(&questionsCache); err != nil {
+		return serializer.ErrorResponse(serializer.CodeDatabaseError)
 	}
-	return serializer.ErrorResponse(serializer.CodeDatabaseError)
+	var questions []model.Question
+	for _, member := range questionsCache {
+		splitK := strings.Split(member, ":")
+		id, _ := strconv.Atoi(splitK[0])
+		title := splitK[1]
+		questions = append(questions, model.Question{
+			Model: gorm.Model{
+				ID: uint(id),
+			},
+			Title: title,
+		})
+	}
+	return serializer.OkResponse(serializer.BuildQuestionsResponse(questions))
 }
 
 // 获取热门问题列表

@@ -27,7 +27,7 @@ func BuildUserAnswersResponse(answers []model.Answer) *UserAnswersResponse {
 		if err != nil {
 			continue
 		}
-		likes, _ := model.GetAnswerlikedCount(answer.ID)
+		likes, _ := model.GetAnswerLikedCount(answer.ID)
 		userAnswersResponse.Answers = append(userAnswersResponse.Answers, UserAnswersData{
 			ID:         answer.ID,
 			QuestionID: answer.QuestionID,
