@@ -52,12 +52,12 @@ func GetAnswersByScore(questionID uint, limit int, offset int) ([]Answer, error)
 
 //获取某回答的点赞总数
 func GetAnswerLikedCount(aid uint) (uint, error) {
-	cnt, err := GetLikeCountInCache(aid)
-	if err != nil {
-		return 0, err
+	exist, cnt, err := GetLikeCountInCache(aid)
+	if err != nil || exist {
+		return cnt, err
 	}
 	ans, err := GetAnswer(aid)
-	cnt += ans.LikeCount
+	cnt = ans.LikeCount
 	return cnt, err
 }
 

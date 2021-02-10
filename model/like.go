@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/go-redis/redis"
 	"gorm.io/gorm"
-	"gorm.io/gorm/clause"
 	"qa_go/cache"
 	"strconv"
 	"strings"
@@ -90,6 +89,17 @@ func GetUserLike(uid uint, aid uint) (uint, error) {
 
 // AddUserLike修改用户对某回答的点赞状态  status=0：取消点赞，status=1：点赞，status=2：点踩
 func AddUserLike(uid uint, aid uint, status uint) error {
+	// 如果redis中没有aid点赞数量，加载数据库中的
+	err := cache.RedisClient.HGet(AnswerLikeCount, strconv.Itoa(int(aid))).Err()
+	if err == redis.Nil {
+		err = nil
+		ans, err := GetAnswer(aid)
+		cnt := ans.LikeCount
+		err = cache.RedisClient.HSet(AnswerLikeCount, strconv.Itoa(int(aid)), cnt).Err()
+		if err != nil {
+			return err
+		}
+	}
 	// 获取之前的点赞状态
 	pre, err := GetUserLike(uid, aid)
 	if err != nil {
@@ -101,10 +111,12 @@ func AddUserLike(uid uint, aid uint, status uint) error {
 	keyAns := fmt.Sprintf("%s:%d", UserLikeAnswers, uid)
 	if (pre == NONE || pre == DOWN) && status == UP {
 		incr = 1
+		pipe.ZRem(keyAns, -int(aid))
 		pipe.ZAdd(keyAns, redis.Z{Score: float64(time.Now().Unix()), Member: aid})
 	} else if pre == UP && (status == NONE || status == DOWN) {
 		incr = -1
 		pipe.ZRem(keyAns, aid)
+		pipe.ZAdd(keyAns, redis.Z{Score: float64(time.Now().Unix()), Member: -int(aid)})
 	}
 	pipe.HIncrBy(AnswerLikeCount, strconv.Itoa(int(aid)), incr)
 	keyRec := fmt.Sprintf("%d:%d", uid, aid)
@@ -114,13 +126,13 @@ func AddUserLike(uid uint, aid uint, status uint) error {
 	return err
 }
 
-// GetLikeCountIdInCache 根据AnswerID获取缓存中的点赞修改总数
-func GetLikeCountInCache(aid uint) (uint, error) {
+// GetLikeCountIdInCache 根据AnswerID获取缓存中点赞数据是否存在与修改总数
+func GetLikeCountInCache(aid uint) (bool, uint, error) {
 	res, err := cache.RedisClient.HGet(AnswerLikeCount, strconv.Itoa(int(aid))).Int()
 	if err == redis.Nil {
-		return 0, nil
+		return false, 0, nil
 	}
-	return uint(res), err
+	return true, uint(res), err
 }
 
 // SyncUserLikeRecord 将redis中的用户点赞记录同步到数据库，对应like表
@@ -190,19 +202,10 @@ func SyncAnswerLikeCount() {
 		id, _ := strconv.Atoi(key)
 		count, _ := strconv.Atoi(val)
 
-		var expr clause.Expr
-		if count > 0 {
-			expr = gorm.Expr("like_count + ?", count)
-		} else if count < 0 {
-			expr = gorm.Expr("like_count - ?", -count)
-		} else {
-			continue
-		}
-
 		var answer Answer
 		answer.ID = uint(id)
 
-		err := DB.Model(&answer).UpdateColumn("like_count", expr).Error
+		err := DB.Model(&answer).Update("like_count", count).Error
 		if err != nil {
 			tx.Rollback()
 			panic(err)
