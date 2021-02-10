@@ -117,6 +117,9 @@ func AddUserLike(uid uint, aid uint, status uint) error {
 // GetLikeCountIdInCache 根据AnswerID获取缓存中的点赞修改总数
 func GetLikeCountInCache(aid uint) (uint, error) {
 	res, err := cache.RedisClient.HGet(AnswerLikeCount, strconv.Itoa(int(aid))).Int()
+	if err == redis.Nil {
+		return 0, nil
+	}
 	return uint(res), err
 }
 
