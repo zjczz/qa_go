@@ -14,6 +14,7 @@ func StartSchedule() {
 	addCronFunc(c, "@every 30m", func() {
 		model.SyncUserLikeRecord()
 		model.SyncAnswerLikeCount()
+		model.FreeDeletedAnswersRecord()
 	})
 
 	// 每10分钟同步热榜信息

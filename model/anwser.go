@@ -2,6 +2,7 @@ package model
 
 import (
 	"gorm.io/gorm"
+	"qa_go/cache"
 )
 
 // Answer 回答模型
@@ -12,6 +13,10 @@ type Answer struct {
 	Content    string `gorm:"type:text;not null;"` // 内容
 	LikeCount  uint   `gorm:"not null;"`           // 点赞数
 }
+
+const (
+	DeletedAnswers = "deleted_answers"
+)
 
 // GetAnswer 用ID获取回答
 func GetAnswer(id uint) (*Answer, error) {
@@ -33,6 +38,14 @@ func GetAnswers(ids []uint) ([]Answer, error) {
 // 删除回答
 func DeleteAnswer(id uint) error {
 	result := DB.Delete(&Answer{}, id).Error
+	result = DeleteLikeByAnswer(id)
+	return result
+}
+
+// 删除回答关联的点赞
+func DeleteLikeByAnswer(id uint) error {
+	result := cache.RedisClient.SAdd(DeletedAnswers, id).Err()
+	result = DB.Where("answer_id = ?", id).Delete(&UserLike{}).Error
 	return result
 }
 

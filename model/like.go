@@ -30,7 +30,11 @@ const (
 	UserLikeAnswers = "user_like_answers"
 )
 
-// GetUserLike 获取用户uid的点赞列表
+func IsDeletedAnswer(aid int) bool {
+	return cache.RedisClient.SIsMember(DeletedAnswers, aid).Val()
+}
+
+// GetUserLike 获取用户uid的点赞列表u
 func GetUserLikes(uid uint) ([]uint, error) {
 	var likes []UserLike
 	err := DB.Where("user_id = ? and status = 1", uid).
@@ -45,10 +49,14 @@ func GetUserLikes(uid uint) ([]uint, error) {
 	var res []uint
 
 	// set记录aid是否有更新，
+	// 如果已删除则忽略，
 	// 如果有更新则将数据放入res，并丢弃数据库数据
 	set := make(map[uint]struct{})
 	var member struct{}
 	for _, aid := range likesCache {
+		if IsDeletedAnswer(aid) {
+			continue
+		}
 		if aid > 0 {
 			res = append(res, uint(aid))
 			set[uint(aid)] = member
@@ -150,6 +158,11 @@ func SyncUserLikeRecord() {
 		uid, _ := strconv.Atoi(splitK[0])
 		aid, _ := strconv.Atoi(splitK[1])
 
+		// 回答已删除则不更新
+		if IsDeletedAnswer(aid) {
+			continue
+		}
+
 		splitV := strings.Split(val, ":")
 		status, _ := strconv.Atoi(splitV[0])
 		updateTime, _ := strconv.ParseInt(splitV[1], 10, 64)
@@ -202,6 +215,11 @@ func SyncAnswerLikeCount() {
 		id, _ := strconv.Atoi(key)
 		count, _ := strconv.Atoi(val)
 
+		// 回答已删除则不更新
+		if IsDeletedAnswer(id) {
+			continue
+		}
+
 		var answer Answer
 		answer.ID = uint(id)
 
@@ -215,4 +233,8 @@ func SyncAnswerLikeCount() {
 	tx.Commit()
 	// 删除redis中的数据
 	cache.RedisClient.Del(AnswerLikeCount)
+}
+
+func FreeDeletedAnswersRecord() {
+	cache.RedisClient.Del(DeletedAnswers)
 }
