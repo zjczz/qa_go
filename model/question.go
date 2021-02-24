@@ -37,8 +37,25 @@ func UpdateQuestion(id uint, columns map[string]interface{}) (*Question, error) 
 
 // DeleteQuestion 根据ID删除问题
 func DeleteQuestion(id uint) error {
-	result := DB.Delete(&Question{}, id).Error
+	result := DeleteAnswerByQuestion(id)
+	result = DB.Delete(&Question{}, id).Error
 	return result
+}
+
+// 删除问题下的所有回答
+func DeleteAnswerByQuestion(qid uint) error {
+	var aids []uint
+	err := DB.Table("answers").Select("id").
+		Where("question_id = ?", qid).Find(&aids).Error
+	if err != nil {
+		return err
+	}
+	for _, aid := range aids {
+		if err != DeleteAnswer(aid) {
+			return err
+		}
+	}
+	return err
 }
 
 // 获取指定用户ID发布的问题（时间倒序）
