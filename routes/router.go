@@ -46,6 +46,8 @@ func NewRouter() *gin.Engine {
 		{
 			// 查看个人信息
 			jwt.GET("/user/me", v1.UserMe)
+			// 退出登录
+			jwt.POST("/user/logout", v1.Logout)
 			// 查看个人发布问题
 			jwt.GET("/user/questions", v1.GetUserQuestions)
 			// 查看个人发布回答

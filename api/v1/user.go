@@ -64,25 +64,11 @@ func GetUserAnswers(c *gin.Context) {
 	}
 }
 
-// ChangePassword 修改密码
-func ChangePassword(c *gin.Context) {
-	user := api.CurrentUser(c)
-	var service v1.ChangePassword
-	if err := c.ShouldBind(&service); err == nil {
-		res := service.Change(user)
-		c.JSON(http.StatusOK, res)
-	} else {
-		c.JSON(http.StatusOK, serializer.ErrorResponse(serializer.CodeParamError))
-	}
-}
-
 // Logout 用户退出登录
 func Logout(c *gin.Context) {
 	token, _ := c.Get("token")
 	tokenString := token.(string)
 
 	cache.RedisClient.SAdd("jwt:baned", tokenString)
-	c.JSON(http.StatusOK, serializer.Response{
-		Msg: "已退出登录",
-	})
+	c.JSON(http.StatusOK, serializer.OkResponse(nil))
 }
