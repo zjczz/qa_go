@@ -23,8 +23,7 @@ type AnswersResponse struct {
 //BuildAnswersResponse 序列化回答列表响应
 func BuildAnswersResponse(answers []model.Answer) *AnswersResponse {
 	var answersResponse AnswersResponse
-	answersResponse.Count = len(answers)
-
+	answersResponse.Answers = make([]AnswersData, 0, len(answers))
 	for _, answer := range answers {
 		userProfile, _ := model.GetUserProfile(answer.UserID)
 		likes, _ := model.GetAnswerLikedCount(answer.ID)
@@ -40,5 +39,6 @@ func BuildAnswersResponse(answers []model.Answer) *AnswersResponse {
 			LikeCount:   likes,
 		})
 	}
+	answersResponse.Count = len(answersResponse.Answers)
 	return &answersResponse
 }

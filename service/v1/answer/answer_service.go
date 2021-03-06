@@ -1,8 +1,10 @@
 package v1
 
 import (
+	"qa_go/cache"
 	"qa_go/model"
 	"qa_go/serializer"
+	"strconv"
 )
 
 // AddAnswerService 管理回答问题的服务
@@ -31,11 +33,19 @@ func (service *AddAnswerService) AddAnswer(user *model.User, qid uint) *serializ
 	if err := model.DB.Create(answer).Error; err != nil {
 		return serializer.ErrorResponse(serializer.CodeDatabaseError)
 	}
+	// 对应问题回答数+1
 	question, _ := model.GetQuestion(qid)
 	if _, err := model.UpdateQuestion(qid, map[string]interface{}{
 		"answer_count": question.AnswerCount + 1,
 	}); err != nil {
 		return serializer.ErrorResponse(serializer.CodeDatabaseError)
+	}
+	// 如果对应问题为热门问题但没有热门回答，则新回答成为热门回答
+	qidStr := strconv.Itoa(int(qid))
+	if _, err := cache.RedisClient.ZScore(cache.KeyHotQuestions, qidStr).Result(); err == nil {
+		if !cache.RedisClient.HExists(cache.KeyHotAnswer, qidStr).Val() {
+			cache.RedisClient.HSet(cache.KeyHotAnswer, qidStr, answer.ID)
+		}
 	}
 	return serializer.OkResponse(serializer.BuildAnswerResponse(answer, user.ID))
 }
@@ -94,17 +104,26 @@ func DeleteAnswer(user *model.User, qid uint, aid uint) *serializer.Response {
 		return serializer.ErrorResponse(serializer.CodeAnswerNotOwn)
 	}
 
-	if err := model.DeleteAnswer(aid); err != nil {
+	err = model.DeleteAnswer(aid)
+	if err != nil {
 		return serializer.ErrorResponse(serializer.CodeDatabaseError)
-	} else {
-		question, _ := model.GetQuestion(qid)
-		if _, err := model.UpdateQuestion(qid, map[string]interface{}{
-			"answer_count": question.AnswerCount - 1,
-		}); err != nil {
-			return serializer.ErrorResponse(serializer.CodeDatabaseError)
-		}
-		return serializer.OkResponse(nil)
 	}
+
+	// 回答数减一
+	question, _ := model.GetQuestion(qid)
+	if _, err := model.UpdateQuestion(qid, map[string]interface{}{
+		"answer_count": question.AnswerCount - 1,
+	}); err != nil {
+		return serializer.ErrorResponse(serializer.CodeDatabaseError)
+	}
+	// 如果redis中有热门问题与本条回答记录，删除
+	if aidStr, err := cache.RedisClient.HGet(cache.KeyHotAnswer, strconv.Itoa(int(qid))).Result(); err == nil {
+		ai, _ := strconv.Atoi(aidStr)
+		if uint(ai) == aid {
+			cache.RedisClient.HDel(cache.KeyHotAnswer, strconv.Itoa(int(qid)))
+		}
+	}
+	return serializer.OkResponse(nil)
 }
 
 //Voter 点赞

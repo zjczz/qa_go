@@ -25,7 +25,7 @@ type AwesomesResponse struct {
 // 序列化点赞列表响应
 func BuildAwesomesResponse(answers []model.Answer, uid uint) *AwesomesResponse {
 	var awesomesResponse AwesomesResponse
-	awesomesResponse.Count = len(answers)
+	awesomesResponse.Answers = make([]AwesomesData, 0, len(answers))
 
 	for _, answer := range answers {
 		userProfile, _ := model.GetUserProfile(answer.UserID)
@@ -46,5 +46,6 @@ func BuildAwesomesResponse(answers []model.Answer, uid uint) *AwesomesResponse {
 			LikeStatus:  status,
 		})
 	}
+	awesomesResponse.Count = len(awesomesResponse.Answers)
 	return &awesomesResponse
 }

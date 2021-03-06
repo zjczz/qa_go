@@ -6,12 +6,6 @@ import (
 	"strconv"
 )
 
-// Redis 缓存的一条热门问题
-type CacheHotQuestion struct {
-	ID    string
-	Title string
-}
-
 // 首页推荐列表单个问题
 type QuestionBrief struct {
 	ID     uint         `json:"id"`
@@ -36,46 +30,36 @@ type QuestionsData struct {
 }
 
 // 序列化首页推荐列表
-func BuildQuestions(questions []CacheHotQuestion) *QuestionsData {
+func BuildQuestions(questionsID []string) *QuestionsData {
 	questionsData := QuestionsData{}
-	questionsData.Count = len(questions)
-	questionsData.Questions = make([]QuestionBrief, len(questions))
-	for index, question := range questions {
-		qid, _ := strconv.Atoi(question.ID)
-		questionData := QuestionBrief{
-			ID:     uint(qid),
-			Title:  question.Title,
-			Answer: nil,
-		}
-		if cache.RedisClient.HExists(cache.KeyHotAnswer, question.ID).Val() {
-			aid, _ := cache.RedisClient.HGet(cache.KeyHotAnswer, question.ID).Int()
-			if answer, err := model.GetAnswer(uint(aid)); err == nil {
-				profile, _ := model.GetUserProfile(answer.UserID)
-				likes, _ := model.GetAnswerLikedCount(answer.ID)
-				answerBrief := AnswerBrief{}
-				answerBrief.ID = answer.ID
-				answerBrief.Content = answer.Content
-				answerBrief.Avatar = profile.Avatar
-				answerBrief.Nickname = profile.Nickname
-				answerBrief.Description = profile.Description
-				answerBrief.LikeCount = likes
-				questionData.Answer = &answerBrief
+	questionsData.Questions = make([]QuestionBrief, 0, len(questionsID))
+	for _, questionID := range questionsID {
+		qid, _ := strconv.Atoi(questionID)
+		if question, err := model.GetQuestion(uint(qid)); err == nil {
+			questionData := QuestionBrief{
+				ID:     question.ID,
+				Title:  question.Title,
+				Answer: nil,
 			}
+			if aidStr, err := cache.RedisClient.HGet(cache.KeyHotAnswer, questionID).Result(); err == nil {
+				aid, _ := strconv.Atoi(aidStr)
+				if answer, err := model.GetAnswer(uint(aid)); err == nil {
+					profile, _ := model.GetUserProfile(answer.UserID)
+					likes, _ := model.GetAnswerLikedCount(answer.ID)
+					answerBrief := AnswerBrief{}
+					answerBrief.ID = answer.ID
+					answerBrief.Content = answer.Content
+					answerBrief.Avatar = profile.Avatar
+					answerBrief.Nickname = profile.Nickname
+					answerBrief.Description = profile.Description
+					answerBrief.LikeCount = likes
+					questionData.Answer = &answerBrief
+				}
+			}
+			questionsData.Questions = append(questionsData.Questions, questionData)
 		}
-		//if answer := model.GetHotAnswer(question.ID); answer != nil {
-		//	profile, _ := model.GetUserProfile(answer.UserID)
-		//	likes, _ := model.GetAnswerLikedCount(answer.ID)
-		//	answerBrief := AnswerBrief{}
-		//	answerBrief.ID = answer.ID
-		//	answerBrief.Content = answer.Content
-		//	answerBrief.Avatar = profile.Avatar
-		//	answerBrief.Nickname = profile.Nickname
-		//	answerBrief.Description = profile.Description
-		//	answerBrief.LikeCount = likes
-		//	questionData.Answer = &answerBrief
-		//}
-		questionsData.Questions[index] = questionData
 	}
+	questionsData.Count = len(questionsData.Questions)
 	return &questionsData
 }
 
@@ -85,9 +69,9 @@ type QuestionsResponse struct {
 }
 
 // 序列化首页推荐列表响应
-func BuildQuestionsResponse(questions []CacheHotQuestion) *QuestionsResponse {
+func BuildQuestionsResponse(questionsID []string) *QuestionsResponse {
 	return &QuestionsResponse{
-		*BuildQuestions(questions),
+		*BuildQuestions(questionsID),
 	}
 }
 
@@ -105,9 +89,25 @@ type HotQuestionsResponse struct {
 }
 
 // 序列化热门问题列表响应
-func BuildHotQuestionsResponse(questions []HotQuestionsData) *HotQuestionsResponse {
-	return &HotQuestionsResponse{
-		Count:     len(questions),
-		Questions: questions,
+func BuildHotQuestionsResponse(questions []string) *HotQuestionsResponse {
+	response := HotQuestionsResponse{}
+	response.Questions = make([]HotQuestionsData, 0, len(questions))
+	for _, questionsID := range questions {
+		qid, _ := strconv.Atoi(questionsID)
+		question, err := model.GetQuestion(uint(qid))
+		if err != nil {
+			continue
+		}
+		score, err := cache.RedisClient.ZScore(cache.KeyHotQuestions, questionsID).Result()
+		if err != nil {
+			continue
+		}
+		response.Questions = append(response.Questions, HotQuestionsData{
+			ID:    question.ID,
+			Title: question.Title,
+			Hot:   uint(score),
+		})
 	}
+	response.Count = len(response.Questions)
+	return &response
 }

@@ -75,7 +75,7 @@ func SyncHotQuestions() {
 	pipe.Del(cache.KeyHotAnswer)
 	for _, question := range questions {
 		hot := (uint(question.CreatedAt.Unix())-daysAgo)/3600 + question.AnswerCount*2
-		pipe.ZAdd(cache.KeyHotQuestions, redis.Z{Score: float64(hot), Member: strconv.Itoa(int(question.ID)) + ":" + question.Title})
+		pipe.ZAdd(cache.KeyHotQuestions, redis.Z{Score: float64(hot), Member: strconv.Itoa(int(question.ID))})
 
 		if answer := GetHotAnswer(question.ID); answer != nil {
 			pipe.HSet(cache.KeyHotAnswer, strconv.Itoa(int(question.ID)), answer.ID)

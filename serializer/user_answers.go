@@ -21,7 +21,7 @@ type UserAnswersResponse struct {
 // 序列化个人回答列表响应
 func BuildUserAnswersResponse(answers []model.Answer) *UserAnswersResponse {
 	var userAnswersResponse UserAnswersResponse
-	userAnswersResponse.Count = len(answers)
+	userAnswersResponse.Answers = make([]UserAnswersData, 0, len(answers))
 	for _, answer := range answers {
 		question, err := model.GetQuestion(answer.QuestionID)
 		if err != nil {
@@ -37,5 +37,6 @@ func BuildUserAnswersResponse(answers []model.Answer) *UserAnswersResponse {
 			CreatedAt:  answer.CreatedAt.Unix(),
 		})
 	}
+	userAnswersResponse.Count = len(userAnswersResponse.Answers)
 	return &userAnswersResponse
 }

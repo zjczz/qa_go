@@ -20,7 +20,8 @@ type UserQuestionsResponse struct {
 // 序列化个人问题列表响应
 func BuildUserQuestionsResponse(questions []model.Question) *UserQuestionsResponse {
 	var userQuestionsResponse UserQuestionsResponse
-	userQuestionsResponse.Count = len(questions)
+	userQuestionsResponse.Questions = make([]UserQuestionsData, 0, len(questions))
+
 	for _, question := range questions {
 		userQuestionsResponse.Questions = append(userQuestionsResponse.Questions, UserQuestionsData{
 			ID:          question.ID,
@@ -30,5 +31,6 @@ func BuildUserQuestionsResponse(questions []model.Question) *UserQuestionsRespon
 			CreatedAt:   question.CreatedAt.Unix(),
 		})
 	}
+	userQuestionsResponse.Count = len(userQuestionsResponse.Questions)
 	return &userQuestionsResponse
 }
