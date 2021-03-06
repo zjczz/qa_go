@@ -18,7 +18,7 @@ func StartSchedule() {
 	})
 
 	// 每10分钟同步热榜信息
-	addCronFunc(c, "@every 10m", func() {
+	addCronFunc(c, "@every 1m", func() {
 		model.SyncHotQuestions()
 	})
 

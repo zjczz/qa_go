@@ -9,6 +9,7 @@ import (
 
 const (
 	KeyHotQuestions = "hot_questions"
+	KeyHotAnswer    = "hot_answer"
 )
 
 // RedisClient Redis缓存客户端单例

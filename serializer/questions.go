@@ -1,8 +1,16 @@
 package serializer
 
 import (
+	"qa_go/cache"
 	"qa_go/model"
+	"strconv"
 )
+
+// Redis 缓存的一条热门问题
+type CacheHotQuestion struct {
+	ID    string
+	Title string
+}
 
 // 首页推荐列表单个问题
 type QuestionBrief struct {
@@ -28,28 +36,44 @@ type QuestionsData struct {
 }
 
 // 序列化首页推荐列表
-func BuildQuestions(questions []model.Question) *QuestionsData {
+func BuildQuestions(questions []CacheHotQuestion) *QuestionsData {
 	questionsData := QuestionsData{}
 	questionsData.Count = len(questions)
 	questionsData.Questions = make([]QuestionBrief, len(questions))
 	for index, question := range questions {
+		qid, _ := strconv.Atoi(question.ID)
 		questionData := QuestionBrief{
-			ID:     question.ID,
+			ID:     uint(qid),
 			Title:  question.Title,
 			Answer: nil,
 		}
-		if answer := model.GetHotAnswer(question.ID); answer != nil {
-			profile, _ := model.GetUserProfile(answer.UserID)
-			likes, _ := model.GetAnswerLikedCount(answer.ID)
-			answerBrief := AnswerBrief{}
-			answerBrief.ID = answer.ID
-			answerBrief.Content = answer.Content
-			answerBrief.Avatar = profile.Avatar
-			answerBrief.Nickname = profile.Nickname
-			answerBrief.Description = profile.Description
-			answerBrief.LikeCount = likes
-			questionData.Answer = &answerBrief
+		if cache.RedisClient.HExists(cache.KeyHotAnswer, question.ID).Val() {
+			aid, _ := cache.RedisClient.HGet(cache.KeyHotAnswer, question.ID).Int()
+			if answer, err := model.GetAnswer(uint(aid)); err == nil {
+				profile, _ := model.GetUserProfile(answer.UserID)
+				likes, _ := model.GetAnswerLikedCount(answer.ID)
+				answerBrief := AnswerBrief{}
+				answerBrief.ID = answer.ID
+				answerBrief.Content = answer.Content
+				answerBrief.Avatar = profile.Avatar
+				answerBrief.Nickname = profile.Nickname
+				answerBrief.Description = profile.Description
+				answerBrief.LikeCount = likes
+				questionData.Answer = &answerBrief
+			}
 		}
+		//if answer := model.GetHotAnswer(question.ID); answer != nil {
+		//	profile, _ := model.GetUserProfile(answer.UserID)
+		//	likes, _ := model.GetAnswerLikedCount(answer.ID)
+		//	answerBrief := AnswerBrief{}
+		//	answerBrief.ID = answer.ID
+		//	answerBrief.Content = answer.Content
+		//	answerBrief.Avatar = profile.Avatar
+		//	answerBrief.Nickname = profile.Nickname
+		//	answerBrief.Description = profile.Description
+		//	answerBrief.LikeCount = likes
+		//	questionData.Answer = &answerBrief
+		//}
 		questionsData.Questions[index] = questionData
 	}
 	return &questionsData
@@ -61,7 +85,7 @@ type QuestionsResponse struct {
 }
 
 // 序列化首页推荐列表响应
-func BuildQuestionsResponse(questions []model.Question) *QuestionsResponse {
+func BuildQuestionsResponse(questions []CacheHotQuestion) *QuestionsResponse {
 	return &QuestionsResponse{
 		*BuildQuestions(questions),
 	}

@@ -65,16 +65,21 @@ func GetUserQuestions(userID uint) ([]Question, error) {
 	return questions, result.Error
 }
 
-// 取近30天的问题信息，计算热度并存入redis
+// 取近30天的问题信息，计算热度并存入redis，同时存入一条热门回答
 func SyncHotQuestions() {
 	daysAgo := uint(time.Now().Unix()) - 60*60*24*30
 	var questions []Question
 	DB.Select("id", "created_at", "title", "answer_count").Where("DATE_SUB(CURDATE(), INTERVAL 30 DAY) <= date(created_at)").Find(&questions)
 	pipe := cache.RedisClient.TxPipeline()
-	pipe.ZRemRangeByRank(cache.KeyHotQuestions, 0, -1)
+	pipe.Del(cache.KeyHotQuestions)
+	pipe.Del(cache.KeyHotAnswer)
 	for _, question := range questions {
 		hot := (uint(question.CreatedAt.Unix())-daysAgo)/3600 + question.AnswerCount*2
 		pipe.ZAdd(cache.KeyHotQuestions, redis.Z{Score: float64(hot), Member: strconv.Itoa(int(question.ID)) + ":" + question.Title})
+
+		if answer := GetHotAnswer(question.ID); answer != nil {
+			pipe.HSet(cache.KeyHotAnswer, strconv.Itoa(int(question.ID)), answer.ID)
+		}
 	}
 	pipe.Exec()
 }

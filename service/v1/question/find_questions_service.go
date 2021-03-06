@@ -2,12 +2,9 @@ package v1
 
 import (
 	"qa_go/cache"
-	"qa_go/model"
 	"qa_go/serializer"
 	"strconv"
 	"strings"
-
-	"gorm.io/gorm"
 )
 
 // 获取首页问题列表，并加载其高赞回答
@@ -16,15 +13,13 @@ func FindQuestions(limit int, offset int) *serializer.Response {
 	if err := cache.RedisClient.ZRevRange(cache.KeyHotQuestions, int64(offset), int64(offset+limit-1)).ScanSlice(&questionsCache); err != nil {
 		return serializer.ErrorResponse(serializer.CodeDatabaseError)
 	}
-	var questions []model.Question
+	var questions []serializer.CacheHotQuestion
 	for _, member := range questionsCache {
 		splitK := strings.Split(member, ":")
-		id, _ := strconv.Atoi(splitK[0])
+		id := splitK[0]
 		title := splitK[1]
-		questions = append(questions, model.Question{
-			Model: gorm.Model{
-				ID: uint(id),
-			},
+		questions = append(questions, serializer.CacheHotQuestion{
+			ID:    id,
 			Title: title,
 		})
 	}
