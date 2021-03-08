@@ -35,10 +35,10 @@ func BuildQuestions(questionsID []string) *QuestionsData {
 	questionsData.Questions = make([]QuestionBrief, 0, len(questionsID))
 	for _, questionID := range questionsID {
 		qid, _ := strconv.Atoi(questionID)
-		if question, err := model.GetQuestion(uint(qid)); err == nil {
+		if title, err := cache.RedisClient.HGet(cache.KeyHotQuestionTitle, questionID).Result(); err == nil {
 			questionData := QuestionBrief{
-				ID:     question.ID,
-				Title:  question.Title,
+				ID:     uint(qid),
+				Title:  title,
 				Answer: nil,
 			}
 			if aidStr, err := cache.RedisClient.HGet(cache.KeyHotAnswer, questionID).Result(); err == nil {
@@ -94,19 +94,17 @@ func BuildHotQuestionsResponse(questions []string) *HotQuestionsResponse {
 	response.Questions = make([]HotQuestionsData, 0, len(questions))
 	for _, questionsID := range questions {
 		qid, _ := strconv.Atoi(questionsID)
-		question, err := model.GetQuestion(uint(qid))
-		if err != nil {
-			continue
-		}
 		score, err := cache.RedisClient.ZScore(cache.KeyHotQuestions, questionsID).Result()
 		if err != nil {
 			continue
 		}
-		response.Questions = append(response.Questions, HotQuestionsData{
-			ID:    question.ID,
-			Title: question.Title,
-			Hot:   uint(score),
-		})
+		if title, err := cache.RedisClient.HGet(cache.KeyHotQuestionTitle, questionsID).Result(); err == nil {
+			response.Questions = append(response.Questions, HotQuestionsData{
+				ID:    uint(qid),
+				Title: title,
+				Hot:   uint(score),
+			})
+		}
 	}
 	response.Count = len(response.Questions)
 	return &response

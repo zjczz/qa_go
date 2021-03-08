@@ -36,6 +36,9 @@ func (editQuestionService *EditQuestionService) EditQuestion(user *model.User, i
 	}); err != nil {
 		return serializer.ErrorResponse(serializer.CodeDatabaseError)
 	} else {
+		if _, err := cache.RedisClient.HGet(cache.KeyHotQuestionTitle, strconv.Itoa(int(id))).Result(); err == nil {
+			cache.RedisClient.HSet(cache.KeyHotQuestionTitle, strconv.Itoa(int(id)), question.Title)
+		}
 		return serializer.OkResponse(serializer.BuildQuestionResponse(question, user.ID))
 	}
 }
@@ -51,6 +54,7 @@ func DeleteQuestion(user *model.User, id uint) *serializer.Response {
 	}
 	pipe := cache.RedisClient.TxPipeline()
 	pipe.ZRem(cache.KeyHotQuestions, strconv.Itoa(int(id)))
+	pipe.ZRem(cache.KeyHotQuestionTitle, strconv.Itoa(int(id)))
 	pipe.HDel(cache.KeyHotAnswer, strconv.Itoa(int(id)))
 	pipe.Exec()
 	return serializer.OkResponse(nil)
